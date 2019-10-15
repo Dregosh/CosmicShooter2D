@@ -22,14 +22,14 @@ public class Bullet extends GameObject implements EntityA
     @Override
     public void tick()
     {
-        y -= 5;
+        setY(getY() - 5);
         anim.runAnimation();
     }
 
     @Override
     public void render(Graphics2D g2)
     {
-        anim.drawAnimation(g2, x, y, 0);
+        anim.drawAnimation(g2, getX(), getY(), 0);
     }
 
     /**
@@ -42,18 +42,6 @@ public class Bullet extends GameObject implements EntityA
     @Override
     public Rectangle getBounds(int width, int height)
     {
-        return new Rectangle((int) x + 11, (int) y, 9, 32);
-    }
-
-    @Override
-    public double getX()
-    {
-        return x;
-    }
-
-    @Override
-    public double getY()
-    {
-        return y;
+        return new Rectangle((int) getX() + 11, (int) getY(), 9, 32);
     }
 }

@@ -92,7 +92,7 @@ public class Game extends Canvas implements Runnable
         entitiesA = controller.getEntitiesA();
         entitiesB = controller.getEntitiesB();
 
-        state = STATE.MENU; //Debug Mode: STATE.GAME, Retail: STATE.MENU
+        state = STATE.GAME; //Debug Mode: STATE.GAME, Retail: STATE.MENU
         menuState = new MenuState(this);
         gameOverState = new GameOverState(this);
 
@@ -306,9 +306,13 @@ public class Game extends Canvas implements Runnable
             }
             else if (key == KeyEvent.VK_SPACE && !isShooting)
             {
-                isShooting = true;
-                controller.addEntity(new Bullet(player.getX(),
-                        player.getY() + 10, tex, this));
+                if (player.getCurrentAmmoAmount() > 0)
+                {
+                    isShooting = true;
+                    player.setCurrentAmmoAmount(player.getCurrentAmmoAmount() - 1);
+                    controller.addEntity(new Bullet(player.getX(),
+                            player.getY() + 10, tex, this));
+                }
             }
             else if (key == KeyEvent.VK_P)
             {
@@ -398,6 +402,15 @@ public class Game extends Canvas implements Runnable
         return spriteSheet;
     }
 
+    public Textures getTex()
+    {
+        return tex;
+    }
+
+    public Player getPlayer()
+    {
+        return player;
+    }
     public int getEnemyCount()
     {
         return enemyCount;
@@ -406,7 +419,6 @@ public class Game extends Canvas implements Runnable
     {
         this.enemyCount = enemyCount;
     }
-
     public int getEnemyKilled()
     {
         return enemyKilled;
@@ -415,21 +427,10 @@ public class Game extends Canvas implements Runnable
     {
         this.enemyKilled = enemyKilled;
     }
-
-    public STATE getState()
+    public void setRestarted(boolean restarted)
     {
-        return state;
+        isRestarted = restarted;
     }
-    public void setState(STATE state)
-    {
-        this.state = state;
-    }
-
-    public MenuState getMenuState()
-    {
-        return menuState;
-    }
-
     public LinkedList<EntityA> getEntitiesA()
     {
         return entitiesA;
@@ -438,14 +439,20 @@ public class Game extends Canvas implements Runnable
     {
         return entitiesB;
     }
-
+    public STATE getState()
+    {
+        return state;
+    }
+    public void setState(STATE state)
+    {
+        this.state = state;
+    }
+    public MenuState getMenuState()
+    {
+        return menuState;
+    }
     public GameOverState getGameOverState()
     {
         return gameOverState;
-    }
-
-    public void setRestarted(boolean restarted)
-    {
-        isRestarted = restarted;
     }
 }

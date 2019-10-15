@@ -29,7 +29,7 @@ public class Controller
     {
         for (int i = 0; i < enemyCount; i++)
         {
-            addEntity(new Enemy(r.nextInt(Game.WIDTH * Game.SCALE - 32), -35,
+            addEntity(new Enemy(r.nextInt(Game.WIDTH * Game.SCALE - 32), -32,
                     this.tex, this, game));
         }
     }
@@ -52,6 +52,13 @@ public class Controller
         for (int i = 0; i < entitiesB.size(); i++)
         {
             entityB = entitiesB.get(i);
+
+            if (entityB.getClass().equals(Explotion.class))
+            {
+                Explotion tempExp = (Explotion) entityB;
+                if (System.currentTimeMillis() > tempExp.getCreationTime() + 200)
+                    entitiesB.remove(entityB);
+            }
 
             entityB.tick();
         }
