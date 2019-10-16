@@ -17,10 +17,10 @@ import java.util.LinkedList;
 
 public class Game extends Canvas implements Runnable
 {
+    public static final String TITLE = "Kosmiczna Strzelanina 2D";
     public static final int WIDTH = 320;
     public static final int HEIGHT = WIDTH / 12 * 9;
     public static final int SCALE = 2;
-    public static final String TITLE = "Kosmiczna Strzelanina 2D";
 
     private boolean running = false;
     private Thread thread;
@@ -54,6 +54,7 @@ public class Game extends Canvas implements Runnable
 
     private STATE state;
     private MenuState menuState;
+    private HelpState helpState;
     private GameOverState gameOverState;
 
     public void init()
@@ -74,6 +75,10 @@ public class Game extends Canvas implements Runnable
         unispaceBold = unispaceBold.deriveFont(16F);
 
         tex = new Textures(this);
+
+        menuState = new MenuState(this);
+        helpState = new HelpState(this);
+        gameOverState = new GameOverState(this);
 
         this.addKeyListener(new KeyInput(this));
         this.addMouseListener(new MouseInput(this));
@@ -97,16 +102,14 @@ public class Game extends Canvas implements Runnable
         isShooting = false;
         isRestarted = false;
 
-        player = new Player((WIDTH * SCALE / 2.0) - 16, (HEIGHT * SCALE) - 40,
-                tex, this);
-        controller = new Controller(tex, this);
+        player = new Player(this,
+                (WIDTH * SCALE / 2.0) - 16, (HEIGHT * SCALE) - 40);
+        controller = new Controller(this);
 
         entitiesA = controller.getEntitiesA();
         entitiesB = controller.getEntitiesB();
 
         state = STATE.MENU; //Debug Mode: STATE.GAME, Retail: STATE.MENU
-        menuState = new MenuState(this);
-        gameOverState = new GameOverState(this);
 
         controller.createEnemy(enemyCount);
     }
@@ -164,7 +167,7 @@ public class Game extends Canvas implements Runnable
         while (running)
         {
             long now = System.nanoTime();
-            delta += (now - lastTime) / ns; //Explanation up
+            delta += (now - lastTime) / ns; //Delta explanation up
             lastTime = now;
             if (delta >= 1)
             {
@@ -175,9 +178,9 @@ public class Game extends Canvas implements Runnable
             render();
             frames++;
 
-            //FPS Counter..
-            //Wyswietlamy w Konsoli ilosc Ticks i FPS , ale aby nie spamowac
-            // jej przy kazdym wykonaniu petli, to ustawiamy wyswietlanie
+            //FPS Counter info..
+            //Wyswietla w Konsoli ilosc Ticks i FPS , ale aby nie spamowac
+            // przy kazdym wykonaniu petli, ustawia wyswietlanie
             // tylko gdy minie 1 sekunda czasu rzeczywistego (a wiec rowniez
             // wtedy, gdy wykona sie +-60 razy tick(). )
             /*if (System.currentTimeMillis() - timer > 1000)
@@ -232,17 +235,29 @@ public class Game extends Canvas implements Runnable
 
         if (state == STATE.GAME)
         {
+            //Level / Points UI display
             g2.setColor(Color.WHITE);
             g2.setFont(unispaceBold);
-            g2.drawString("Poziom: " + currentLevel, 525, 430);
-            g2.drawString("Punkty: " + currentPoints, 525, 455);
+            g2.drawString("Eskadra: " + currentLevel, 500, 430);
+            g2.drawString("Punkty: " + currentPoints, 500, 455);
 
+            //Player space ship display
             player.render(g2);
+
+            //Other Objects (enemies, missiles etc) display
             controller.render(g2);
 
+            //Player health bar display
             g2.setColor(Color.GRAY);
             g2.fillRect(10, 10, 100, 20);
-            g2.setColor(Color.GREEN);
+            if (player.getHealth() > 80)
+                g2.setColor(Color.GREEN);
+            else if (player.getHealth() > 50)
+                g2.setColor(Color.YELLOW);
+            else if (player.getHealth() >= 30)
+                g2.setColor(Color.ORANGE);
+            else
+                g2.setColor(Color.RED);
             g2.fillRect(10, 10, player.getHealth(), 20);
             g2.setColor(Color.WHITE);
             g2.drawRect(10, 10, player.getHealth(), 20);
@@ -250,6 +265,9 @@ public class Game extends Canvas implements Runnable
 
         else if (state == STATE.MENU)
             menuState.render(g2);
+
+        else if (state == STATE.HELP)
+            helpState.render(g2);
 
         else if (state == STATE.GAME_OVER)
             gameOverState.render(g2);
@@ -289,6 +307,8 @@ public class Game extends Canvas implements Runnable
         {
             if (key == KeyEvent.VK_ENTER)
                 this.state = STATE.GAME;
+            else if (key == KeyEvent.VK_P)
+                this.state = STATE.HELP;
             else if (key == KeyEvent.VK_ESCAPE)
                 System.exit(0);
         }
@@ -336,6 +356,11 @@ public class Game extends Canvas implements Runnable
             }
         }
 
+        else if (this.state == STATE.HELP)
+        {
+            this.state = STATE.MENU;
+        }
+
         //PAUSE_STATE keys
         else if (this.state == STATE.PAUSE)
         {
@@ -346,7 +371,6 @@ public class Game extends Canvas implements Runnable
         else if (this.state == STATE.GAME_OVER)
         {
             if (key == KeyEvent.VK_ENTER ||
-                key == KeyEvent.VK_SPACE ||
                 key == KeyEvent.VK_ESCAPE)
                     this.isRestarted = true;
         }
@@ -419,15 +443,17 @@ public class Game extends Canvas implements Runnable
     {
         return spriteSheet;
     }
-
     public Textures getTex()
     {
         return tex;
     }
-
     public Player getPlayer()
     {
         return player;
+    }
+    public Controller getController()
+    {
+        return controller;
     }
     public int getEnemyCount()
     {
@@ -480,6 +506,10 @@ public class Game extends Canvas implements Runnable
     public MenuState getMenuState()
     {
         return menuState;
+    }
+    public HelpState getHelpState()
+    {
+        return helpState;
     }
     public GameOverState getGameOverState()
     {

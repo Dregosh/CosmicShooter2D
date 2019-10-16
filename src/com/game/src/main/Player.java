@@ -8,25 +8,23 @@ import java.awt.*;
 
 public class Player extends GameObject implements EntityA
 {
+    private Game game;
     private double velX = 0;
     private double velY = 0;
-    private Textures tex;
-    private Game game;
     private int health;
     private int maxAmmoAmount;
     private int currentAmmoAmount;
     private long ammoRegenTimer;
     Animation anim;
 
-    public Player(double x, double y, Textures tex, Game game)
+    public Player(Game game, double x, double y)
     {
         super(x, y);
-        this.tex = tex;
         this.game = game;
         this.health = 100;
         this.maxAmmoAmount = 5;
         this.currentAmmoAmount = 5;
-        anim = new Animation(tex.player, 5);
+        anim = new Animation(game.getTex().player, 5);
     }
 
     @Override
@@ -82,7 +80,7 @@ public class Player extends GameObject implements EntityA
         //Ammo amount draw
         for (int i = 0; i < currentAmmoAmount; i++)
         {
-            g2.drawImage(tex.missile[2], (i * 15), 420, null);
+            g2.drawImage(game.getTex().missile[2], (i * 15), 420, null);
         }
 
         //Player animation draw

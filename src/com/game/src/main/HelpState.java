@@ -5,48 +5,62 @@ import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
+import java.util.StringTokenizer;
 
-public class GameOverState
+public class HelpState
 {
     private Game game;
     private Rectangle2D returnButton;
 
-    public GameOverState(Game game)
+    public HelpState(Game game)
     {
         this.game = game;
-        returnButton = new Rectangle2D.Double(
-                        (Game.WIDTH * Game.SCALE / 2.0) - 100, 350, 200 ,50);
+        this.returnButton = new Rectangle2D.Double(
+                (Game.WIDTH * Game.SCALE / 2.0) - 100, 380, 200 ,50);
     }
 
     public void render(Graphics2D g2)
     {
-        Font fnt0 = new Font("arial", Font.BOLD, 30);
+        Font fnt0 = new Font("arial", Font.BOLD, 22);
         g2.setFont(fnt0);
         g2.setColor(Color.WHITE);
         FontRenderContext context = g2.getFontRenderContext();
 
-        Rectangle2D labelBounds = fnt0.getStringBounds("Koniec gry", context);
-        g2.drawString("Koniec gry", (int)(((Game.WIDTH * Game.SCALE) / 2)
-                      - labelBounds.getWidth() / 2), 100);
+        String welcome = "Witamy w grze \"Kosmiczna Strzelanina 2D\"";
+        Rectangle2D labelBounds = fnt0.getStringBounds(welcome, context);
+        g2.drawString(welcome, (int)(((Game.WIDTH * Game.SCALE) / 2)
+                                          - labelBounds.getWidth() / 2), 70);
 
-        fnt0 = new Font("arial", Font.BOLD, 20);
+        fnt0 = new Font("arial", Font.BOLD, 16);
         g2.setFont(fnt0);
         g2.setColor(Color.YELLOW);
 
-        StringBuilder tempMsg = new StringBuilder("Pokonane eskadry: ");
-        tempMsg.append(game.getCurrentLevel() - 1);
-        String msg = new String(tempMsg);
-        labelBounds = fnt0.getStringBounds(msg, context);
-        g2.drawString(msg, (int)(((Game.WIDTH * Game.SCALE) / 2)
-                                 - labelBounds.getWidth() / 2), 210);
-
-        tempMsg = new StringBuilder("Zdobyte punkty: ");
-        tempMsg.append(game.getCurrentPoints());
-        msg = new String(tempMsg);
-        labelBounds = fnt0.getStringBounds(msg, context);
-        g2.drawString(msg, (int)(((Game.WIDTH * Game.SCALE) / 2)
-                                 - labelBounds.getWidth() / 2), 260);
-
+        String msg =
+                "Twoim zadaniem jest zdobycie jak największej ilości " +
+                "punktów\n " +
+                "poprzez likwidowanie przeciwników, którzy przybywają w " +
+                "eskadrach.\n " +
+                "Każdy szwadron wroga jest liczniejszy i szybszy od " +
+                "poprzedniego.\n " +
+                "Jeżeli pojazd wroga przedostanie się za linię Twojej " +
+                "obrony, wróg\n" +
+                "wysyła w ramach tej samej eskadry kolejny statek, który " +
+                "jest wart\n " +
+                "o jeden punkt mniej od przepuszczonego i różni się kolorem" +
+                ".\n" +
+                "Punktacja za zestrzelenie pojazdów:\n" +
+                "Czerwony: 3, Pomarańczowy: 2, Żółty: 1, Szary: 0.";
+        int line = 0;
+        StringTokenizer tokenizer = new StringTokenizer(msg, "\n");
+        while (tokenizer.hasMoreElements())
+        {
+            String token = tokenizer.nextToken();
+            labelBounds = fnt0.getStringBounds(token, context);
+            g2.drawString(token, (int)(((Game.WIDTH * Game.SCALE) / 2)
+                                       - labelBounds.getWidth() / 2),
+                    125 + line);
+            line += 30;
+        }
 
         g2.setColor(Color.WHITE);
         Font fnt1 = new Font("arial", Font.BOLD, 20);
@@ -56,7 +70,7 @@ public class GameOverState
     public void mousePressed(MouseEvent e)
     {
         if (returnButton.contains(e.getPoint()))
-            game.setRestarted(true);
+            game.setState(STATE.MENU);
     }
 
     /**

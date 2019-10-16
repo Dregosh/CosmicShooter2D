@@ -46,6 +46,8 @@ public class MenuState
     {
         if (playButton.contains(e.getPoint()))
             game.setState(STATE.GAME);
+        else if (helpButton.contains(e.getPoint()))
+            game.setState(STATE.HELP);
         else if (quitButton.contains(e.getPoint()))
             System.exit(0);
     }
