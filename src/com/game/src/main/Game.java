@@ -10,6 +10,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -28,6 +30,7 @@ public class Game extends Canvas implements Runnable
         BufferedImage.TYPE_INT_RGB);
     private BufferedImage spriteSheet = null;
     private BufferedImage background = null;
+    private Font unispaceBold = null;
 
     private Textures tex;
     private Player player;
@@ -36,6 +39,8 @@ public class Game extends Canvas implements Runnable
     private int enemyCount;
     private int enemyKilled;
     private int additionalEnemiesOnNextLvl;
+    private int currentPoints;
+    private int currentLevel;
 
     private boolean upPressed;
     private boolean downPressed;
@@ -58,11 +63,16 @@ public class Game extends Canvas implements Runnable
         {
             spriteSheet = loader.loadImage("/sprite_sheet.png");
             background = loader.loadImage("/space_background.png");
+            unispaceBold = Font.createFont(Font.TRUETYPE_FONT,
+                    new FileInputStream("res/unispace_bd.ttf"));
         }
-        catch (IOException e)
+        catch (IOException | FontFormatException e)
         {
             e.printStackTrace();
         }
+
+        unispaceBold = unispaceBold.deriveFont(16F);
+
         tex = new Textures(this);
 
         this.addKeyListener(new KeyInput(this));
@@ -72,11 +82,13 @@ public class Game extends Canvas implements Runnable
         this.restart();
     }
 
-    public void restart()
+    private void restart()
     {
         enemyCount = 5;
         enemyKilled = 0;
         additionalEnemiesOnNextLvl = 2;
+        currentPoints = 0;
+        currentLevel = 1;
 
         upPressed = false;
         downPressed = false;
@@ -85,14 +97,14 @@ public class Game extends Canvas implements Runnable
         isShooting = false;
         isRestarted = false;
 
-        player = new Player((WIDTH * SCALE / 2) - 16, (HEIGHT * SCALE) - 40,
+        player = new Player((WIDTH * SCALE / 2.0) - 16, (HEIGHT * SCALE) - 40,
                 tex, this);
         controller = new Controller(tex, this);
 
         entitiesA = controller.getEntitiesA();
         entitiesB = controller.getEntitiesB();
 
-        state = STATE.GAME; //Debug Mode: STATE.GAME, Retail: STATE.MENU
+        state = STATE.MENU; //Debug Mode: STATE.GAME, Retail: STATE.MENU
         menuState = new MenuState(this);
         gameOverState = new GameOverState(this);
 
@@ -121,8 +133,7 @@ public class Game extends Canvas implements Runnable
         System.exit(1);
     }
 
-    //Ta metoda wykona sie AUTOMATYCZNIE gdy wlaczymy Thread.
-    // Tutaj bedzie wiec glowna petla gry.
+    //Ta metoda wykona sie AUTOMATYCZNIE po wlaczeniu Thread.
     @Override
     public void run()
     {
@@ -146,14 +157,14 @@ public class Game extends Canvas implements Runnable
         // weren't to multiply by 60, then delta would be equal to 1 after 1
         // second.
         double delta = 0;
-        int updates = 0;
-        int frames = 0;
-        long timer = System.currentTimeMillis();
+        int updates = 0;    //for FPS/Tick counter
+        int frames = 0;     //for FPS/Tick counter
+        long timer = System.currentTimeMillis();    //for FPS/Tick counter
 
         while (running)
         {
             long now = System.nanoTime();
-            delta += (now - lastTime) / ns; //See the explanation up
+            delta += (now - lastTime) / ns; //Explanation up
             lastTime = now;
             if (delta >= 1)
             {
@@ -195,6 +206,7 @@ public class Game extends Canvas implements Runnable
             {
                 enemyCount += additionalEnemiesOnNextLvl;
                 enemyKilled = 0;
+                currentLevel++;
                 controller.createEnemy(enemyCount);
             }
         }
@@ -205,7 +217,7 @@ public class Game extends Canvas implements Runnable
         //wyciagamy BS z nadklasy Canvas.
         BufferStrategy bs = this.getBufferStrategy();
         //bs zainicjalizowane powyzej po raz pierwszy bedzie mialo wartosc null
-        //dlatego ponizej tworzymy if, ktory zadziala tylko RAZ, na poczatku:
+        //dlatego ponizej jest if, ktory zadziala tylko RAZ, na poczatku:
         if (bs == null)
         {
             createBufferStrategy(3);
@@ -215,17 +227,15 @@ public class Game extends Canvas implements Runnable
         Graphics g = bs.getDrawGraphics();
         //////Render here
         g2 = (Graphics2D) g;
-
         g2.drawImage(image, 0, 0, getWidth(), getHeight(), this);
         g2.drawImage(background, 0, 0, this);
 
         if (state == STATE.GAME)
         {
             g2.setColor(Color.WHITE);
-            g2.drawString("EntitiesA: " + controller.getEntitiesA().size(),
-                    10, 100);
-            g2.drawString("EntitiesB: " + controller.getEntitiesB().size(),
-                    10, 120);
+            g2.setFont(unispaceBold);
+            g2.drawString("Poziom: " + currentLevel, 525, 430);
+            g2.drawString("Punkty: " + currentPoints, 525, 455);
 
             player.render(g2);
             controller.render(g2);
@@ -271,7 +281,7 @@ public class Game extends Canvas implements Runnable
         int key = e.getKeyCode();
 
         //Keys always active
-        if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_K)
+        if (key == KeyEvent.VK_K)
             System.exit(0);
 
         //MENU_STATE keys
@@ -279,6 +289,8 @@ public class Game extends Canvas implements Runnable
         {
             if (key == KeyEvent.VK_ENTER)
                 this.state = STATE.GAME;
+            else if (key == KeyEvent.VK_ESCAPE)
+                System.exit(0);
         }
 
         //GAME_STATE keys
@@ -318,6 +330,10 @@ public class Game extends Canvas implements Runnable
             {
                 this.state = STATE.PAUSE;
             }
+            else if (key == KeyEvent.VK_ESCAPE)
+            {
+                this.isRestarted = true;
+            }
         }
 
         //PAUSE_STATE keys
@@ -329,8 +345,10 @@ public class Game extends Canvas implements Runnable
         //GAME_OVER_STATE keys
         else if (this.state == STATE.GAME_OVER)
         {
-            if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_SPACE)
-                this.isRestarted = true;
+            if (key == KeyEvent.VK_ENTER ||
+                key == KeyEvent.VK_SPACE ||
+                key == KeyEvent.VK_ESCAPE)
+                    this.isRestarted = true;
         }
     }
 
@@ -426,6 +444,18 @@ public class Game extends Canvas implements Runnable
     public void setEnemyKilled(int enemyKilled)
     {
         this.enemyKilled = enemyKilled;
+    }
+    public int getCurrentPoints()
+    {
+        return currentPoints;
+    }
+    public void setCurrentPoints(int currentPoints)
+    {
+        this.currentPoints = currentPoints;
+    }
+    public int getCurrentLevel()
+    {
+        return currentLevel;
     }
     public void setRestarted(boolean restarted)
     {

@@ -3,18 +3,20 @@ package com.game.src.main;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 
 public class GameOverState
 {
     private Game game;
 
-    public Rectangle returnButton = new Rectangle(Game.WIDTH - 100, 350,
-            200 ,50);
+    private Rectangle2D returnButton;
 
     public GameOverState(Game game)
     {
         this.game = game;
+        returnButton = new Rectangle2D.Double(
+                        (Game.WIDTH * Game.SCALE / 2.0) - 100, 350, 200 ,50);
     }
 
     public void render(Graphics2D g2)
@@ -25,32 +27,65 @@ public class GameOverState
         FontRenderContext context = g2.getFontRenderContext();
 
         Rectangle2D labelBounds = fnt0.getStringBounds("Koniec gry", context);
-        g2.drawString("Koniec gry",
-                (int)(((Game.WIDTH * Game.SCALE) / 2)
+        g2.drawString("Koniec gry", (int)(((Game.WIDTH * Game.SCALE) / 2)
                       - labelBounds.getWidth() / 2), 100);
 
-        Font fnt1 = new Font("arial", Font.BOLD, 20);
-        g2.setFont(fnt1);
-        context = g2.getFontRenderContext();
+        fnt0 = new Font("arial", Font.BOLD, 20);
+        g2.setFont(fnt0);
+        g2.setColor(Color.YELLOW);
 
-        String buttonLabel = "Powrót do menu";
-        labelBounds = fnt1.getStringBounds(buttonLabel,
-                context);
+        StringBuilder tempMsg = new StringBuilder("Dotarłeś do poziomu: ");
+        tempMsg.append(game.getCurrentLevel());
+        String msg = new String(tempMsg);
+        labelBounds = fnt0.getStringBounds(msg, context);
+        g2.drawString(msg, (int)(((Game.WIDTH * Game.SCALE) / 2)
+                                 - labelBounds.getWidth() / 2), 210);
 
-        g2.setColor(Color.BLACK);
-        g2.fill(returnButton);
+        tempMsg = new StringBuilder("Zdobyte punkty: ");
+        tempMsg.append(game.getCurrentPoints());
+        msg = new String(tempMsg);
+        labelBounds = fnt0.getStringBounds(msg, context);
+        g2.drawString(msg, (int)(((Game.WIDTH * Game.SCALE) / 2)
+                                 - labelBounds.getWidth() / 2), 260);
+
 
         g2.setColor(Color.WHITE);
-        g2.draw(returnButton);
-        g2.drawString(buttonLabel,
-                (int) (returnButton.x +
-                       (returnButton.width / 2 - labelBounds.getWidth() / 2)),
-                (returnButton.y + 32));
+        Font fnt1 = new Font("arial", Font.BOLD, 20);
+        this.drawButtonWithLabel(g2, fnt1, "Powrót do menu", returnButton);
     }
 
     public void mousePressed(MouseEvent e)
     {
         if (returnButton.contains(e.getPoint()))
             game.setRestarted(true);
+    }
+
+    /**
+     * Draws a rectangle button (black background, white outlines and label)
+     * with user-specified label centered in the middle of the button.
+     * @param g2 current graphics renderer
+     * @param font font of the label
+     * @param label text of the label
+     * @param button rectangle with button position and outlines
+     */
+    private void drawButtonWithLabel(Graphics2D g2, Font font,
+            String label, Rectangle2D button)
+    {
+        g2.setColor(Color.BLACK);
+        g2.fill(button);
+
+        g2.setColor(Color.WHITE);
+        g2.setFont(font);
+        FontRenderContext context = g2.getFontRenderContext();
+
+        Rectangle2D labelBounds = font.getStringBounds(label, context);
+        LineMetrics metrics = font.getLineMetrics(label, context);
+        double fontHeight = metrics.getAscent() + metrics.getDescent();
+
+        double yOffset = (button.getHeight() - fontHeight) / 2;
+        g2.drawString(label, (int) (button.getX() + button.getWidth() / 2 -
+                                    labelBounds.getWidth() / 2),
+                (int) (button.getY() + yOffset + metrics.getAscent()));
+        g2.draw(button);
     }
 }

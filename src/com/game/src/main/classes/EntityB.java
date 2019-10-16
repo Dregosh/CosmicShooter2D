@@ -2,6 +2,9 @@ package com.game.src.main.classes;
 
 import java.awt.*;
 
+/**
+ * Interface for all HOSTILE units/items in the game
+ */
 public interface EntityB
 {
     void tick();

@@ -2,6 +2,9 @@ package com.game.src.main.classes;
 
 import java.awt.*;
 
+/**
+ * Interface for all FRIENDLY units/items in the game
+ */
 public interface EntityA
 {
     void tick();

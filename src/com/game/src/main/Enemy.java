@@ -51,6 +51,7 @@ public class Enemy extends GameObject implements EntityB
                 controller.removeEntity(this);
                 controller.addEntity(new Explotion(game,
                         this.getX(), this.getY()));
+                game.setCurrentPoints(game.getCurrentPoints() + 1);
                 game.setEnemyKilled(game.getEnemyKilled() + 1);
             }
         }
