@@ -1,8 +1,8 @@
 package com.cosmic2d.main;
 
 import com.cosmic2d.main.classes.BufferedImageLoader;
-import com.cosmic2d.main.classes.EntityB;
 import com.cosmic2d.main.classes.EntityA;
+import com.cosmic2d.main.classes.EntityB;
 import com.cosmic2d.main.states.*;
 
 import javax.swing.*;
@@ -10,13 +10,12 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 
-public class Game extends Canvas implements Runnable
+public class Game extends JPanel
 {
     public static final String TITLE = "Kosmiczna Strzelanina 2D";
     public static final int WIDTH = 320;
@@ -59,6 +58,20 @@ public class Game extends Canvas implements Runnable
     private HelpState helpState;
     private GameOverState gameOverState;
 
+    private int fps = 60;
+    private int frameCount = 0;
+
+    @Override
+    public void addNotify()
+    {
+        super.addNotify();
+        if (running) return;
+
+        running = true;
+        thread = new Thread(() -> gameLoop());
+        thread.start();     //gameLoop() starts here
+    }
+
     public void init()
     {
         BufferedImageLoader loader = new BufferedImageLoader();
@@ -85,7 +98,6 @@ public class Game extends Canvas implements Runnable
 
         this.addKeyListener(new KeyInput(this));
         this.addMouseListener(new MouseInput(this));
-        this.requestFocus();
 
         this.restart();
     }
@@ -117,13 +129,71 @@ public class Game extends Canvas implements Runnable
         controller.createEnemy(enemyCount);
     }
 
-    private synchronized void start()
+    //Game Loop
+    public void gameLoop()
     {
-        if (running) return;
+        init();
 
-        running = true;
-        thread = new Thread(this);
-        thread.start();     //to uruchamia automatycznie metodę run()
+        final double GAME_HERTZ = 60.0;
+        final double TIME_BETWEEN_UPDATES = 1_000_000_000 / GAME_HERTZ;
+
+        final int MAX_UPDATES_BEFORE_RENDER = 5;
+        double lastUpdateTime = System.nanoTime();
+        double lastRenderTime = System.nanoTime();
+
+        final double TARGET_FPS = 60;
+        final double TARGET_TIME_BETWEEN_RENDERS = 1_000_000_000 / TARGET_FPS;
+
+        int lastSecondTime = (int) (lastUpdateTime / 1_000_000_000);
+
+        while(running)
+        {
+            double now = System.nanoTime();
+            int updateCount = 0;
+
+            while (now - lastUpdateTime > TIME_BETWEEN_UPDATES &&
+                   updateCount < MAX_UPDATES_BEFORE_RENDER)
+            {
+                tick();
+                lastUpdateTime += TIME_BETWEEN_UPDATES;
+                updateCount++;
+            }
+
+            if (now - lastUpdateTime > TIME_BETWEEN_UPDATES)
+            {
+                lastUpdateTime = now - TIME_BETWEEN_UPDATES;
+            }
+
+            repaint();
+            lastRenderTime = now;
+
+            //FPS counter
+            int thisSecond = (int) (lastUpdateTime / 1_000_000_000);
+            if (thisSecond > lastSecondTime)
+            {
+                System.out.println("NEW SECOND " + thisSecond +
+                                   " " + frameCount);
+                fps = frameCount;
+                frameCount = 0;
+                lastSecondTime = thisSecond;
+            }
+
+            while (now - lastRenderTime < TARGET_TIME_BETWEEN_RENDERS &&
+                   now - lastUpdateTime < TIME_BETWEEN_UPDATES)
+            {
+                Thread.yield();
+                try { Thread.sleep(1); }
+                catch (Exception e) { e.printStackTrace(); }
+
+                now = System.nanoTime();
+            }
+
+            if (isRestarted)
+            {
+                this.restart();
+            }
+        }
+        stop();
     }
 
     private synchronized void stop()
@@ -137,68 +207,6 @@ public class Game extends Canvas implements Runnable
             e.printStackTrace();
         }
         System.exit(1);
-    }
-
-    //Ta metoda wykona sie AUTOMATYCZNIE po wlaczeniu Thread.
-    @Override
-    public void run()
-    {
-        init();
-        long lastTime = System.nanoTime();
-        final double amountOfTicks = 60.0;
-        double ns = 1_000_000_000 / amountOfTicks;
-
-        //DELTA..
-        //(now - lastTime) gives the elapsed time since the run method was
-        // entered. Then, we can think of the division of amountOfTicks as
-        // being two parts. We first divide the elapsed time by 1000000000,
-        // since System.nanoTime () gives the time in nanoseconds, meaning:
-        //nanoseconds / 1000000000 = seconds.
-        //So basically we have the elapsed time in seconds. We then multiply
-        // this by a number, in this case 60. So we still have the elapsed
-        // time in seconds, just multiplied by 60. Thus, when delta is
-        // greater or equal to 1, 1/60 seconds have passed, Because again, 1
-        // second is actually given the value 60 by the multiplication we did.
-        // And after 1/60 second we want to call the tick() method. If we
-        // weren't to multiply by 60, then delta would be equal to 1 after 1
-        // second.
-        double delta = 0;
-        int updates = 0;    //for FPS/Tick counter
-        int frames = 0;     //for FPS/Tick counter
-        long timer = System.currentTimeMillis();    //for FPS/Tick counter
-
-        while (running)
-        {
-            long now = System.nanoTime();
-            delta += (now - lastTime) / ns; //Delta explanation up
-            lastTime = now;
-            if (delta >= 1)
-            {
-                tick();
-                updates++;
-                delta--;
-            }
-            render();
-            frames++;
-
-            //FPS Counter info..
-            //Wyswietla w Konsoli ilosc Ticks i FPS , ale aby nie spamowac
-            // przy kazdym wykonaniu petli, ustawia wyswietlanie
-            // tylko gdy minie 1 sekunda czasu rzeczywistego (a wiec rowniez
-            // wtedy, gdy wykona sie +-60 razy tick(). )
-            /*if (System.currentTimeMillis() - timer > 1000)
-            {
-                timer += 1000;
-                System.out.println(updates + " Ticks, FPS " + frames);
-                updates = 0;
-                frames = 0;
-            }*/
-            if (isRestarted)
-            {
-                this.restart();
-            }
-        }
-        stop();
     }
 
     private void tick()
@@ -218,20 +226,11 @@ public class Game extends Canvas implements Runnable
         }
     }
 
-    private void render()
+    @Override
+    protected void paintComponent(Graphics g)
     {
-        //wyciagamy BS z nadklasy Canvas.
-        BufferStrategy bs = this.getBufferStrategy();
-        //bs zainicjalizowane powyzej po raz pierwszy bedzie mialo wartosc null
-        //dlatego ponizej jest if, ktory zadziala tylko RAZ, na poczatku:
-        if (bs == null)
-        {
-            createBufferStrategy(3);
-            return;
-        }
+        super.paintComponent(g);
 
-        Graphics g = bs.getDrawGraphics();
-        //////Render here
         g2 = (Graphics2D) g;
         g2.drawImage(image, 0, 0, getWidth(), getHeight(), this);
         g2.drawImage(background, 0, 0, this);
@@ -295,9 +294,9 @@ public class Game extends Canvas implements Runnable
             g2.drawString("Wciśnij dowolny klawisz by kontynuować", 150, 270);
         }
 
-        //////Render ends
-        g2.dispose();
-        bs.show();
+        g.drawString("FPS: " + fps, 10, 50);
+        frameCount++;
+        //g2.dispose();
     }
 
     public void keyPressed(KeyEvent e)
@@ -427,24 +426,6 @@ public class Game extends Canvas implements Runnable
         }
     }
 
-    public static void main(String[] args)
-    {
-        Game game = new Game();
-        game.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
-        game.setMaximumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
-        game.setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
-
-        JFrame frame = new JFrame(Game.TITLE);
-        frame.add(game);
-        frame.pack();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-
-        game.start();
-    }
-
     public BufferedImage getSpriteSheet()
     {
         return spriteSheet;
@@ -520,5 +501,11 @@ public class Game extends Canvas implements Runnable
     public GameOverState getGameOverState()
     {
         return gameOverState;
+    }
+
+    @Override
+    public Dimension getPreferredSize()
+    {
+        return new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
     }
 }

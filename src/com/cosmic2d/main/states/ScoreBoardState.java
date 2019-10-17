@@ -36,8 +36,6 @@ public class ScoreBoardState
         g2.setFont(fnt0);
         g2.setColor(Color.YELLOW);
 
-        game.
-
         String msg =
                 "Punktacja za zestrzelenie wrogich jednostek:\n" +
                 "Czerwony: 3, Pomarańczowy: 2, Żółty: 1, Szary: 0.";
@@ -96,6 +94,6 @@ public class ScoreBoardState
 
     private class HighScoreData
     {
-        
+
     }
 }

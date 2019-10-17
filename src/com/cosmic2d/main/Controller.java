@@ -49,11 +49,11 @@ public class Controller
         {
             entityB = entitiesB.get(i);
 
-            if (entityB.getClass().equals(Explotion.class))
+            if (entityB instanceof Explotion)
             {
-                Explotion tempExp = (Explotion) entityB;
-                if (System.currentTimeMillis() > tempExp.getCreationTime() + 200)
-                    entitiesB.remove(entityB);
+                if (System.currentTimeMillis() >
+                    ((Explotion) entityB).getCreationTime() + 200)
+                        entitiesB.remove(entityB);
             }
 
             entityB.tick();
