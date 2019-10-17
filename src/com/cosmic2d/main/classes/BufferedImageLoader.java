@@ -1,4 +1,4 @@
-package com.game.src.main;
+package com.cosmic2d.main.classes;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

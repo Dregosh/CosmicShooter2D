@@ -1,8 +1,8 @@
-package com.game.src.main;
+package com.cosmic2d.main;
 
-import com.game.src.main.classes.EntityA;
-import com.game.src.main.classes.EntityB;
-import com.game.src.main.libs.Animation;
+import com.cosmic2d.main.classes.EntityA;
+import com.cosmic2d.main.classes.EntityB;
+import com.cosmic2d.main.classes.Animation;
 
 import java.awt.*;
 import java.util.Random;

@@ -1,4 +1,6 @@
-package com.game.src.main;
+package com.cosmic2d.main.states;
+
+import com.cosmic2d.main.Game;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

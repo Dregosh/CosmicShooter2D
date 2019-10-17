@@ -1,18 +1,19 @@
-package com.game.src.main;
+package com.cosmic2d.main.states;
+
+import com.cosmic2d.main.Game;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
 import java.util.StringTokenizer;
 
-public class HelpState
+public class ScoreBoardState
 {
     private Game game;
     private Rectangle2D returnButton;
 
-    public HelpState(Game game)
+    public ScoreBoardState(Game game)
     {
         this.game = game;
         this.returnButton = new Rectangle2D.Double(
@@ -26,29 +27,19 @@ public class HelpState
         g2.setColor(Color.WHITE);
         FontRenderContext context = g2.getFontRenderContext();
 
-        String welcome = "Witamy w grze \"Kosmiczna Strzelanina 2D\"";
+        String welcome = "NAJLEPSZE WYNIKI";
         Rectangle2D labelBounds = fnt0.getStringBounds(welcome, context);
         g2.drawString(welcome, (int)(((Game.WIDTH * Game.SCALE) / 2)
-                                          - labelBounds.getWidth() / 2), 70);
+                                     - labelBounds.getWidth() / 2), 70);
 
         fnt0 = new Font("arial", Font.BOLD, 16);
         g2.setFont(fnt0);
         g2.setColor(Color.YELLOW);
 
+        game.
+
         String msg =
-                "Twoim zadaniem jest zdobycie jak największej ilości " +
-                "punktów\n " +
-                "poprzez likwidowanie przeciwników, którzy przybywają w " +
-                "eskadrach.\n " +
-                "Każdy szwadron wroga jest liczniejszy i szybszy od " +
-                "poprzedniego.\n " +
-                "Jeżeli pojazd wroga przedostanie się za linię Twojej " +
-                "obrony, wróg\n" +
-                "wysyła w ramach tej samej eskadry kolejny statek, który " +
-                "jest wart\n " +
-                "o jeden punkt mniej od przepuszczonego i różni się kolorem" +
-                ".\n" +
-                "Punktacja za zestrzelenie pojazdów:\n" +
+                "Punktacja za zestrzelenie wrogich jednostek:\n" +
                 "Czerwony: 3, Pomarańczowy: 2, Żółty: 1, Szary: 0.";
         int line = 0;
         StringTokenizer tokenizer = new StringTokenizer(msg, "\n");
@@ -67,11 +58,12 @@ public class HelpState
         this.drawButtonWithLabel(g2, fnt1, "Powrót do menu", returnButton);
     }
 
-    public void mousePressed(MouseEvent e)
+    //HelpState handles Mouse Input of this state
+    /*public void mousePressed(MouseEvent e)
     {
         if (returnButton.contains(e.getPoint()))
             game.setState(STATE.MENU);
-    }
+    }*/
 
     /**
      * Draws a rectangle button (black background, white outlines and label)
@@ -100,5 +92,10 @@ public class HelpState
                                     labelBounds.getWidth() / 2),
                 (int) (button.getY() + yOffset + metrics.getAscent()));
         g2.draw(button);
+    }
+
+    private class HighScoreData
+    {
+        
     }
 }

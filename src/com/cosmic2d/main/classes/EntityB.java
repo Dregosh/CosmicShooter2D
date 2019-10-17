@@ -1,4 +1,4 @@
-package com.game.src.main.classes;
+package com.cosmic2d.main.classes;
 
 import java.awt.*;
 

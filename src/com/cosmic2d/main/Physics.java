@@ -1,7 +1,7 @@
-package com.game.src.main;
+package com.cosmic2d.main;
 
-import com.game.src.main.classes.EntityA;
-import com.game.src.main.classes.EntityB;
+import com.cosmic2d.main.classes.EntityA;
+import com.cosmic2d.main.classes.EntityB;
 
 public class Physics
 {

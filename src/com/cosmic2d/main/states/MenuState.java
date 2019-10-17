@@ -1,4 +1,7 @@
-package com.game.src.main;
+package com.cosmic2d.main.states;
+
+import com.cosmic2d.main.Game;
+import com.cosmic2d.main.states.STATE;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -10,6 +13,7 @@ public class MenuState
 {
     private Game game;
     private Rectangle2D playButton;
+    private Rectangle2D scoreBoardButton;
     private Rectangle2D helpButton;
     private Rectangle2D quitButton;
 
@@ -18,8 +22,8 @@ public class MenuState
         this.game = game;
         this.playButton = new Rectangle2D.Double(
                 (Game.WIDTH * Game.SCALE / 2.0) - 75, 150, 150, 50);
-        this.helpButton = new Rectangle2D.Double(
-                (Game.WIDTH * Game.SCALE / 2.0) - 75, 250, 150, 50);
+        this.scoreBoardButton = new Rectangle2D.Double(145, 250, 150, 50);
+        this.helpButton = new Rectangle2D.Double(345, 250, 150, 50);
         this.quitButton = new Rectangle2D.Double(
                 (Game.WIDTH * Game.SCALE / 2.0) - 75, 350, 150, 50);
     }
@@ -38,6 +42,7 @@ public class MenuState
 
         Font fnt1 = new Font("arial", Font.BOLD, 20);
         this.drawButtonWithLabel(g2, fnt1, "Nowa Gra", playButton);
+        this.drawButtonWithLabel(g2, fnt1, "Najlepsi", scoreBoardButton);
         this.drawButtonWithLabel(g2, fnt1, "Pomoc", helpButton);
         this.drawButtonWithLabel(g2, fnt1, "Koniec", quitButton);
     }
@@ -46,6 +51,8 @@ public class MenuState
     {
         if (playButton.contains(e.getPoint()))
             game.setState(STATE.GAME);
+        else if (scoreBoardButton.contains(e.getPoint()))
+            game.setState(STATE.SCORE_BOARD);
         else if (helpButton.contains(e.getPoint()))
             game.setState(STATE.HELP);
         else if (quitButton.contains(e.getPoint()))

@@ -1,4 +1,6 @@
-package com.game.src.main;
+package com.cosmic2d.main;
+
+import com.cosmic2d.main.classes.SpriteSheet;
 
 import java.awt.image.BufferedImage;
 

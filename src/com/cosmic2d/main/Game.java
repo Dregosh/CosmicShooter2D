@@ -1,7 +1,9 @@
-package com.game.src.main;
+package com.cosmic2d.main;
 
-import com.game.src.main.classes.EntityA;
-import com.game.src.main.classes.EntityB;
+import com.cosmic2d.main.classes.BufferedImageLoader;
+import com.cosmic2d.main.classes.EntityB;
+import com.cosmic2d.main.classes.EntityA;
+import com.cosmic2d.main.states.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +12,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -24,7 +25,7 @@ public class Game extends Canvas implements Runnable
 
     private boolean running = false;
     private Thread thread;
-    Graphics2D g2;
+    private Graphics2D g2;
 
     private BufferedImage image = new BufferedImage(WIDTH, HEIGHT,
         BufferedImage.TYPE_INT_RGB);
@@ -54,6 +55,7 @@ public class Game extends Canvas implements Runnable
 
     private STATE state;
     private MenuState menuState;
+    private ScoreBoardState scoreBoardState;
     private HelpState helpState;
     private GameOverState gameOverState;
 
@@ -77,6 +79,7 @@ public class Game extends Canvas implements Runnable
         tex = new Textures(this);
 
         menuState = new MenuState(this);
+        scoreBoardState = new ScoreBoardState(this);
         helpState = new HelpState(this);
         gameOverState = new GameOverState(this);
 
@@ -265,6 +268,9 @@ public class Game extends Canvas implements Runnable
 
         else if (state == STATE.MENU)
             menuState.render(g2);
+
+        else if (state == STATE.SCORE_BOARD)
+            scoreBoardState.render(g2);
 
         else if (state == STATE.HELP)
             helpState.render(g2);

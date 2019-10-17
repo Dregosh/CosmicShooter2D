@@ -1,4 +1,4 @@
-package com.game.src.main;
+package com.cosmic2d.main.states;
 
 public enum STATE
 {

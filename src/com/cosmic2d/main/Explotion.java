@@ -1,10 +1,9 @@
-package com.game.src.main;
+package com.cosmic2d.main;
 
-import com.game.src.main.classes.EntityB;
-import com.game.src.main.libs.Animation;
+import com.cosmic2d.main.classes.Animation;
+import com.cosmic2d.main.classes.EntityB;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 
 public class Explotion extends GameObject implements EntityB
 {
