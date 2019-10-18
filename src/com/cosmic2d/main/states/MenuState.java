@@ -1,9 +1,9 @@
 package com.cosmic2d.main.states;
 
 import com.cosmic2d.main.Game;
-import com.cosmic2d.main.states.STATE;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
@@ -20,12 +20,12 @@ public class MenuState
     public MenuState(Game game)
     {
         this.game = game;
-        this.playButton = new Rectangle2D.Double(
-                (Game.WIDTH * Game.SCALE / 2.0) - 75, 150, 150, 50);
+        this.playButton =
+                new Rectangle2D.Double(Game.WIDTH / 2.0 - 75, 150, 150, 50);
         this.scoreBoardButton = new Rectangle2D.Double(145, 250, 150, 50);
         this.helpButton = new Rectangle2D.Double(345, 250, 150, 50);
-        this.quitButton = new Rectangle2D.Double(
-                (Game.WIDTH * Game.SCALE / 2.0) - 75, 350, 150, 50);
+        this.quitButton =
+                new Rectangle2D.Double(Game.WIDTH / 2.0 - 75, 350, 150, 50);
     }
 
     public void render(Graphics2D g2)
@@ -37,8 +37,7 @@ public class MenuState
 
         Rectangle2D labelBounds = fnt0.getStringBounds(Game.TITLE, context);
         g2.drawString(Game.TITLE,
-                (int)(((Game.WIDTH * Game.SCALE) / 2)
-                      - labelBounds.getWidth() / 2), 100);
+                (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2), 100);
 
         Font fnt1 = new Font("arial", Font.BOLD, 20);
         this.drawButtonWithLabel(g2, fnt1, "Nowa Gra", playButton);
@@ -56,6 +55,20 @@ public class MenuState
         else if (helpButton.contains(e.getPoint()))
             game.setState(STATE.HELP);
         else if (quitButton.contains(e.getPoint()))
+            System.exit(0);
+    }
+
+    public void keyPressed(KeyEvent e)
+    {
+        int key = e.getKeyCode();
+
+        if (key == KeyEvent.VK_ENTER)
+            game.setState(STATE.GAME);
+        else if (key == KeyEvent.VK_N)
+            game.setState(STATE.SCORE_BOARD);
+        else if (key == KeyEvent.VK_P)
+            game.setState(STATE.HELP);
+        else if (key == KeyEvent.VK_ESCAPE)
             System.exit(0);
     }
 

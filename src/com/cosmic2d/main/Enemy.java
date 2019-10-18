@@ -1,13 +1,13 @@
 package com.cosmic2d.main;
 
-import com.cosmic2d.main.classes.EntityA;
-import com.cosmic2d.main.classes.EntityB;
+import com.cosmic2d.main.classes.EntityFriendly;
+import com.cosmic2d.main.classes.EntityHostile;
 import com.cosmic2d.main.classes.Animation;
 
 import java.awt.*;
 import java.util.Random;
 
-public class Enemy extends GameObject implements EntityB
+public class Enemy extends GameObject implements EntityHostile
 {
     private Game game;
     private Textures tex;
@@ -35,7 +35,7 @@ public class Enemy extends GameObject implements EntityB
         setY(getY() + this.speed);
 
         //Enemy out of bottom screen line
-        if (getY() > (Game.HEIGHT * Game.SCALE))
+        if (getY() > Game.HEIGHT)
         {
             if (pointValue > 0)
                 this.pointValue--;
@@ -51,17 +51,19 @@ public class Enemy extends GameObject implements EntityB
                 anim = new Animation(tex.enemy0p, 5);
                 break;
             }
-            setX(r.nextInt(Game.WIDTH * Game.SCALE - 32));
+            setX(r.nextInt(Game.WIDTH - 32));
             setY(-35);
         }
 
         //Check for collision with bullet
-        for (int i = 0; i < game.getEntitiesA().size(); i++)
+        for (int i = 0;
+             i < game.getController().getEntitiesFriendly().size(); i++)
         {
-            EntityA tempEntA = game.getEntitiesA().get(i);
-            if (Physics.collision(this, tempEntA))
+            EntityFriendly entityFriendly =
+                    game.getController().getEntitiesFriendly().get(i);
+            if (Physics.collision(this, entityFriendly))
             {
-                game.getController().removeEntity(tempEntA);
+                game.getController().removeEntity(entityFriendly);
                 game.getController().removeEntity(this);
                 game.getController().addEntity(new Explotion(game,
                         this.getX(), this.getY()));

@@ -3,9 +3,9 @@ package com.cosmic2d.main.classes;
 import java.awt.*;
 
 /**
- * Interface for all FRIENDLY units/items in the game
+ * Interface for all NEUTRAL units/items (i.e. explotions, power-ups)
  */
-public interface EntityA
+public interface EntityNeutral
 {
     void tick();
     void render(Graphics2D g2);
@@ -13,4 +13,6 @@ public interface EntityA
 
     double getX();
     double getY();
+
+    long getCreationTime();
 }

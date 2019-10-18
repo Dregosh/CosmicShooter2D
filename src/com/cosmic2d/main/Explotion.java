@@ -1,11 +1,12 @@
 package com.cosmic2d.main;
 
 import com.cosmic2d.main.classes.Animation;
-import com.cosmic2d.main.classes.EntityB;
+import com.cosmic2d.main.classes.EntityHostile;
+import com.cosmic2d.main.classes.EntityNeutral;
 
 import java.awt.*;
 
-public class Explotion extends GameObject implements EntityB
+public class Explotion extends GameObject implements EntityNeutral
 {
     private Game game;
     private long creationTime;
@@ -31,6 +32,7 @@ public class Explotion extends GameObject implements EntityB
         anim.drawAnimation(g2, getX(), getY(), 0);
     }
 
+    @Override
     public long getCreationTime()
     {
         return creationTime;

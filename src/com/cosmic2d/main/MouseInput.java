@@ -20,8 +20,10 @@ public class MouseInput extends MouseAdapter
         if (game.getState() == STATE.MENU)
             game.getMenuState().mousePressed(e);
 
-        else if (game.getState() == STATE.SCORE_BOARD ||
-                 game.getState() == STATE.HELP)
+        else if (game.getState() == STATE.SCORE_BOARD)
+            game.getScoreBoardState().mousePressed(e);
+
+        else if (game.getState() == STATE.HELP)
             game.getHelpState().mousePressed(e);
 
         else if (game.getState() == STATE.GAME_OVER)

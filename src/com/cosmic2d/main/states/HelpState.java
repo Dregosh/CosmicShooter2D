@@ -3,6 +3,7 @@ package com.cosmic2d.main.states;
 import com.cosmic2d.main.Game;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
@@ -17,8 +18,8 @@ public class HelpState
     public HelpState(Game game)
     {
         this.game = game;
-        this.returnButton = new Rectangle2D.Double(
-                (Game.WIDTH * Game.SCALE / 2.0) - 100, 380, 200 ,50);
+        this.returnButton =
+                new Rectangle2D.Double(Game.WIDTH / 2.0 - 100, 380, 200 ,50);
     }
 
     public void render(Graphics2D g2)
@@ -30,8 +31,8 @@ public class HelpState
 
         String welcome = "Witamy w grze \"Kosmiczna Strzelanina 2D\"";
         Rectangle2D labelBounds = fnt0.getStringBounds(welcome, context);
-        g2.drawString(welcome, (int)(((Game.WIDTH * Game.SCALE) / 2)
-                                          - labelBounds.getWidth() / 2), 70);
+        g2.drawString(welcome,
+                (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2), 70);
 
         fnt0 = new Font("arial", Font.BOLD, 16);
         g2.setFont(fnt0);
@@ -58,8 +59,8 @@ public class HelpState
         {
             String token = tokenizer.nextToken();
             labelBounds = fnt0.getStringBounds(token, context);
-            g2.drawString(token, (int)(((Game.WIDTH * Game.SCALE) / 2)
-                                       - labelBounds.getWidth() / 2),
+            g2.drawString(token,
+                    (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2),
                     125 + line);
             line += 30;
         }
@@ -73,6 +74,11 @@ public class HelpState
     {
         if (returnButton.contains(e.getPoint()))
             game.setState(STATE.MENU);
+    }
+
+    public void keyPressed(KeyEvent e)
+    {
+        game.setState(STATE.MENU);
     }
 
     /**

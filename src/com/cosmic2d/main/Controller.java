@@ -1,7 +1,8 @@
 package com.cosmic2d.main;
 
-import com.cosmic2d.main.classes.EntityA;
-import com.cosmic2d.main.classes.EntityB;
+import com.cosmic2d.main.classes.EntityFriendly;
+import com.cosmic2d.main.classes.EntityHostile;
+import com.cosmic2d.main.classes.EntityNeutral;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -10,10 +11,12 @@ import java.util.Random;
 public class Controller
 {
     private Game game;
-    private LinkedList<EntityA> entitiesA = new LinkedList<>();
-    private LinkedList<EntityB> entitiesB = new LinkedList<>();
-    private EntityA entityA;
-    private EntityB entityB;
+    private LinkedList<EntityFriendly> entitiesFriendly = new LinkedList<>();
+    private LinkedList<EntityHostile> entitiesHostile = new LinkedList<>();
+    private LinkedList<EntityNeutral> entitiesNeutral = new LinkedList<>();
+    private EntityFriendly entityFriendly;
+    private EntityHostile entityHostile;
+    private EntityNeutral entityNeutral;
     private Random r = new Random();
 
     public Controller(Game game)
@@ -25,83 +28,92 @@ public class Controller
     {
         for (int i = 0; i < enemyCount; i++)
         {
-            addEntity(new Enemy(game, r.nextInt(Game.WIDTH * Game.SCALE - 32),
-                    -32));
+            addEntity(new Enemy(game, r.nextInt(Game.WIDTH - 32), -32));
         }
     }
 
     public void tick()
     {
-        //EntityA (Friendly)
-        for (int i = 0; i < entitiesA.size(); i++)
+        //All FRIENDLY Entities update
+        for (int i = 0; i < entitiesFriendly.size(); i++)
         {
-            entityA = entitiesA.get(i);
+            entityFriendly = entitiesFriendly.get(i);
 
-            //Usuwamy z Listy te pociski, ktore wylecialy poza ekran u gory
-            if (entityA.getClass().equals(Bullet.class) && entityA.getY() < -32)
-                entitiesA.remove(entityA);
+            //Removal of friendly bullets which are beyond upper screen border
+            if (entityFriendly.getY() < -35)
+                    entitiesFriendly.remove(entityFriendly);
 
-            entityA.tick();
+            entityFriendly.tick();
         }
 
-        //EntityB (Hostile)
-        for (int i = 0; i < entitiesB.size(); i++)
+        //All HOSTILE Entities update
+        for (int i = 0; i < entitiesHostile.size(); i++)
         {
-            entityB = entitiesB.get(i);
+            entityHostile = entitiesHostile.get(i);
+            entityHostile.tick();
+        }
 
-            if (entityB instanceof Explotion)
-            {
-                if (System.currentTimeMillis() >
-                    ((Explotion) entityB).getCreationTime() + 200)
-                        entitiesB.remove(entityB);
-            }
+        //All NEUTRAL Entities update
+        for (int i = 0; i < entitiesNeutral.size(); i++)
+        {
+            entityNeutral = entitiesNeutral.get(i);
+            if (System.currentTimeMillis() >
+                entityNeutral.getCreationTime() + 200)
+                    entitiesNeutral.remove(entityNeutral);
 
-            entityB.tick();
+            entityNeutral.tick();
         }
     }
 
     public void render(Graphics2D g2)
     {
-        //EntityA
-        for (int i = 0; i < entitiesA.size(); i++)
-        {
-            entityA = entitiesA.get(i);
-            entityA.render(g2);
-        }
+        //All FRIENDLY Entities rendering
+        for (int i = 0; i < entitiesFriendly.size(); i++)
+            entitiesFriendly.get(i).render(g2);
 
-        //EntityB
-        for (int i = 0; i < entitiesB.size(); i++)
-        {
-            entityB = entitiesB.get(i);
-            entityB.render(g2);
-        }
+        //All HOSTILE Entities rendering
+        for (int i = 0; i < entitiesHostile.size(); i++)
+            entitiesHostile.get(i).render(g2);
+
+        //All NEUTRAL Entities rendering
+        for (int i = 0; i < entitiesNeutral.size(); i++)
+            entitiesNeutral.get(i).render(g2);
     }
 
     //Przeladowane (overloaded) funkcje:
-    public void addEntity(EntityA block)
+    public void addEntity(EntityFriendly item)
     {
-        entitiesA.add(block);
+        entitiesFriendly.add(item);
     }
-    public void addEntity(EntityB block)
+    public void addEntity(EntityHostile item)
     {
-        entitiesB.add(block);
+        entitiesHostile.add(item);
+    }
+    public void addEntity(EntityNeutral item) { entitiesNeutral.add(item); }
+
+    public void removeEntity(EntityFriendly item)
+    {
+        entitiesFriendly.remove(item);
+    }
+    public void removeEntity(EntityHostile item)
+    {
+        entitiesHostile.remove(item);
+    }
+    public void removeEntity(EntityNeutral item)
+    {
+        entitiesNeutral.remove(item);
     }
 
-    public void removeEntity(EntityA block)
+    public LinkedList<EntityFriendly> getEntitiesFriendly()
     {
-        entitiesA.remove(block);
+        return entitiesFriendly;
     }
-    public void removeEntity(EntityB block)
+    public LinkedList<EntityHostile> getEntitiesHostile()
     {
-        entitiesB.remove(block);
+        return entitiesHostile;
     }
-
-    public LinkedList<EntityA> getEntitiesA()
+    public LinkedList<EntityNeutral> getEntitiesNeutral()
     {
-        return entitiesA;
-    }
-    public LinkedList<EntityB> getEntitiesB()
-    {
-        return entitiesB;
+        return entitiesNeutral;
     }
 }

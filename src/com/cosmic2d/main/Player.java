@@ -1,13 +1,13 @@
 package com.cosmic2d.main;
 
 import com.cosmic2d.main.classes.Animation;
-import com.cosmic2d.main.classes.EntityA;
-import com.cosmic2d.main.classes.EntityB;
+import com.cosmic2d.main.classes.EntityFriendly;
+import com.cosmic2d.main.classes.EntityHostile;
 import com.cosmic2d.main.states.STATE;
 
 import java.awt.*;
 
-public class Player extends GameObject implements EntityA
+public class Player extends GameObject implements EntityFriendly
 {
     private Game game;
     private double velX = 0;
@@ -54,16 +54,16 @@ public class Player extends GameObject implements EntityA
         if (getY() >= 480 - 44) setY(480 - 44);
 
         //Player with Enemy collision check
-        for (int i = 0; i < game.getEntitiesB().size(); i++)
+        for (int i = 0; i < game.getController().getEntitiesHostile().size(); i++)
         {
-            EntityB tempEntB = game.getEntitiesB().get(i);
+            EntityHostile entityHostile =
+                    game.getController().getEntitiesHostile().get(i);
 
-            if (tempEntB.getClass().equals(Enemy.class) &&
-                Physics.collision(this, tempEntB))
+            if (Physics.collision(this, entityHostile))
             {
-                game.getEntitiesB().remove(tempEntB);
-                game.getEntitiesB().add(new Explotion(game,
-                        tempEntB.getX(), tempEntB.getY()));
+                game.getController().getEntitiesHostile().remove(entityHostile);
+                game.getController().addEntity(new Explotion(game,
+                        entityHostile.getX(), entityHostile.getY()));
                 game.setEnemyKilled(game.getEnemyKilled() + 1);
                 this.health -= 10;
             }

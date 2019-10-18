@@ -1,11 +1,11 @@
 package com.cosmic2d.main;
 
-import com.cosmic2d.main.classes.EntityA;
+import com.cosmic2d.main.classes.EntityFriendly;
 import com.cosmic2d.main.classes.Animation;
 
 import java.awt.*;
 
-public class Bullet extends GameObject implements EntityA
+public class Bullet extends GameObject implements EntityFriendly
 {
     private Textures tex;
     private Game game;

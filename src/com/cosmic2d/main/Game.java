@@ -1,8 +1,6 @@
 package com.cosmic2d.main;
 
 import com.cosmic2d.main.classes.BufferedImageLoader;
-import com.cosmic2d.main.classes.EntityA;
-import com.cosmic2d.main.classes.EntityB;
 import com.cosmic2d.main.states.*;
 
 import javax.swing.*;
@@ -13,14 +11,12 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.LinkedList;
 
 public class Game extends JPanel
 {
     public static final String TITLE = "Kosmiczna Strzelanina 2D";
-    public static final int WIDTH = 320;
-    public static final int HEIGHT = WIDTH / 12 * 9;
-    public static final int SCALE = 2;
+    public static final int WIDTH = 640;
+    public static final int HEIGHT = 480;
 
     private boolean running = false;
     private Thread thread;
@@ -30,12 +26,13 @@ public class Game extends JPanel
         BufferedImage.TYPE_INT_RGB);
     private BufferedImage spriteSheet = null;
     private BufferedImage background = null;
-    private Font unispaceBold = null;
+    private Font fntUnispaceBold = null;
 
     private Textures tex;
     private Player player;
     private Controller controller;
 
+    private String playerName;
     private int enemyCount;
     private int enemyKilled;
     private int additionalEnemiesOnNextLvl;
@@ -48,9 +45,6 @@ public class Game extends JPanel
     private boolean rightPressed;
     private boolean isShooting;
     private boolean isRestarted;
-
-    private LinkedList<EntityA> entitiesA;
-    private LinkedList<EntityB> entitiesB;
 
     private STATE state;
     private MenuState menuState;
@@ -79,7 +73,7 @@ public class Game extends JPanel
         {
             spriteSheet = loader.loadImage("/sprite_sheet.png");
             background = loader.loadImage("/space_background.png");
-            unispaceBold = Font.createFont(Font.TRUETYPE_FONT,
+            fntUnispaceBold = Font.createFont(Font.TRUETYPE_FONT,
                     new FileInputStream("res/unispace_bd.ttf"));
         }
         catch (IOException | FontFormatException e)
@@ -87,7 +81,7 @@ public class Game extends JPanel
             e.printStackTrace();
         }
 
-        unispaceBold = unispaceBold.deriveFont(16F);
+        fntUnispaceBold = fntUnispaceBold.deriveFont(16F);
 
         tex = new Textures(this);
 
@@ -98,6 +92,8 @@ public class Game extends JPanel
 
         this.addKeyListener(new KeyInput(this));
         this.addMouseListener(new MouseInput(this));
+
+        System.out.println(playerName);
 
         this.restart();
     }
@@ -117,12 +113,8 @@ public class Game extends JPanel
         isShooting = false;
         isRestarted = false;
 
-        player = new Player(this,
-                (WIDTH * SCALE / 2.0) - 16, (HEIGHT * SCALE) - 40);
+        player = new Player(this, WIDTH / 2.0 - 16, HEIGHT - 40);
         controller = new Controller(this);
-
-        entitiesA = controller.getEntitiesA();
-        entitiesB = controller.getEntitiesB();
 
         state = STATE.MENU; //Debug Mode: STATE.GAME, Retail: STATE.MENU
 
@@ -171,8 +163,8 @@ public class Game extends JPanel
             int thisSecond = (int) (lastUpdateTime / 1_000_000_000);
             if (thisSecond > lastSecondTime)
             {
-                System.out.println("NEW SECOND " + thisSecond +
-                                   " " + frameCount);
+                //System.out.println("NEW SECOND " + thisSecond +
+                //                   " " + frameCount);
                 fps = frameCount;
                 frameCount = 0;
                 lastSecondTime = thisSecond;
@@ -239,7 +231,7 @@ public class Game extends JPanel
         {
             //Level / Points UI display
             g2.setColor(Color.WHITE);
-            g2.setFont(unispaceBold);
+            g2.setFont(fntUnispaceBold);
             g2.drawString("Eskadra: " + currentLevel, 500, 430);
             g2.drawString("Punkty: " + currentPoints, 500, 455);
 
@@ -286,15 +278,13 @@ public class Game extends JPanel
             Rectangle2D labelBounds = fnt0.getStringBounds(
                     "PAUZA", context);
             g2.drawString("PAUZA",
-                    (int)(((Game.WIDTH * Game.SCALE) / 2)
-                          - labelBounds.getWidth() / 2), 230);
-
+                    (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2), 230);
             fnt0 = new Font("arial", Font.PLAIN, 20);
             g2.setFont(fnt0);
             g2.drawString("Wciśnij dowolny klawisz by kontynuować", 150, 270);
         }
 
-        g.drawString("FPS: " + fps, 10, 50);
+        //g.drawString("FPS: " + fps, 10, 50);
         frameCount++;
         //g2.dispose();
     }
@@ -303,23 +293,8 @@ public class Game extends JPanel
     {
         int key = e.getKeyCode();
 
-        //Keys always active
-        if (key == KeyEvent.VK_K)
-            System.exit(0);
-
-        //MENU_STATE keys
-        else if (state == STATE.MENU)
-        {
-            if (key == KeyEvent.VK_ENTER)
-                this.state = STATE.GAME;
-            else if (key == KeyEvent.VK_P)
-                this.state = STATE.HELP;
-            else if (key == KeyEvent.VK_ESCAPE)
-                System.exit(0);
-        }
-
         //GAME_STATE keys
-        else if (state == STATE.GAME)
+        if (state == STATE.GAME)
         {
             if (key == KeyEvent.VK_RIGHT)
             {
@@ -361,23 +336,10 @@ public class Game extends JPanel
             }
         }
 
-        else if (this.state == STATE.HELP)
-        {
-            this.state = STATE.MENU;
-        }
-
         //PAUSE_STATE keys
         else if (this.state == STATE.PAUSE)
         {
             this.state = STATE.GAME;
-        }
-
-        //GAME_OVER_STATE keys
-        else if (this.state == STATE.GAME_OVER)
-        {
-            if (key == KeyEvent.VK_ENTER ||
-                key == KeyEvent.VK_ESCAPE)
-                    this.isRestarted = true;
         }
     }
 
@@ -430,18 +392,37 @@ public class Game extends JPanel
     {
         return spriteSheet;
     }
+
+    public Font getFntUnispaceBold()
+    {
+        return fntUnispaceBold;
+    }
+
     public Textures getTex()
     {
         return tex;
     }
+
     public Player getPlayer()
     {
         return player;
     }
+
     public Controller getController()
     {
         return controller;
     }
+
+    public String getPlayerName()
+    {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName)
+    {
+        this.playerName = playerName;
+    }
+
     public int getEnemyCount()
     {
         return enemyCount;
@@ -450,22 +431,27 @@ public class Game extends JPanel
     {
         this.enemyCount = enemyCount;
     }
+
     public int getEnemyKilled()
     {
         return enemyKilled;
     }
+
     public void setEnemyKilled(int enemyKilled)
     {
         this.enemyKilled = enemyKilled;
     }
+
     public int getCurrentPoints()
     {
         return currentPoints;
     }
+
     public void setCurrentPoints(int currentPoints)
     {
         this.currentPoints = currentPoints;
     }
+
     public int getCurrentLevel()
     {
         return currentLevel;
@@ -474,30 +460,32 @@ public class Game extends JPanel
     {
         isRestarted = restarted;
     }
-    public LinkedList<EntityA> getEntitiesA()
-    {
-        return entitiesA;
-    }
-    public LinkedList<EntityB> getEntitiesB()
-    {
-        return entitiesB;
-    }
+
     public STATE getState()
     {
         return state;
     }
+
     public void setState(STATE state)
     {
         this.state = state;
     }
+
     public MenuState getMenuState()
     {
         return menuState;
     }
+
+    public ScoreBoardState getScoreBoardState()
+    {
+        return scoreBoardState;
+    }
+
     public HelpState getHelpState()
     {
         return helpState;
     }
+
     public GameOverState getGameOverState()
     {
         return gameOverState;
@@ -506,6 +494,6 @@ public class Game extends JPanel
     @Override
     public Dimension getPreferredSize()
     {
-        return new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
+        return new Dimension(WIDTH, HEIGHT);
     }
 }

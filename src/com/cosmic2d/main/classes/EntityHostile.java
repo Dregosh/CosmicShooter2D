@@ -5,7 +5,7 @@ import java.awt.*;
 /**
  * Interface for all HOSTILE units/items in the game
  */
-public interface EntityB
+public interface EntityHostile
 {
     void tick();
     void render(Graphics2D g2);

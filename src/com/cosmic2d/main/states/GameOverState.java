@@ -3,6 +3,7 @@ package com.cosmic2d.main.states;
 import com.cosmic2d.main.Game;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
@@ -16,8 +17,8 @@ public class GameOverState
     public GameOverState(Game game)
     {
         this.game = game;
-        returnButton = new Rectangle2D.Double(
-                        (Game.WIDTH * Game.SCALE / 2.0) - 100, 350, 200 ,50);
+        returnButton =
+                new Rectangle2D.Double(Game.WIDTH / 2.0 - 100, 350, 200 ,50);
     }
 
     public void render(Graphics2D g2)
@@ -28,8 +29,8 @@ public class GameOverState
         FontRenderContext context = g2.getFontRenderContext();
 
         Rectangle2D labelBounds = fnt0.getStringBounds("Koniec gry", context);
-        g2.drawString("Koniec gry", (int)(((Game.WIDTH * Game.SCALE) / 2)
-                      - labelBounds.getWidth() / 2), 100);
+        g2.drawString("Koniec gry",
+                (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2), 100);
 
         fnt0 = new Font("arial", Font.BOLD, 20);
         g2.setFont(fnt0);
@@ -39,15 +40,15 @@ public class GameOverState
         tempMsg.append(game.getCurrentLevel() - 1);
         String msg = new String(tempMsg);
         labelBounds = fnt0.getStringBounds(msg, context);
-        g2.drawString(msg, (int)(((Game.WIDTH * Game.SCALE) / 2)
-                                 - labelBounds.getWidth() / 2), 210);
+        g2.drawString(msg,
+                (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2), 210);
 
         tempMsg = new StringBuilder("Zdobyte punkty: ");
         tempMsg.append(game.getCurrentPoints());
         msg = new String(tempMsg);
         labelBounds = fnt0.getStringBounds(msg, context);
-        g2.drawString(msg, (int)(((Game.WIDTH * Game.SCALE) / 2)
-                                 - labelBounds.getWidth() / 2), 260);
+        g2.drawString(msg,
+                (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2), 260);
 
 
         g2.setColor(Color.WHITE);
@@ -58,6 +59,14 @@ public class GameOverState
     public void mousePressed(MouseEvent e)
     {
         if (returnButton.contains(e.getPoint()))
+            game.setRestarted(true);
+    }
+
+    public void keyPressed(KeyEvent e)
+    {
+        int key = e.getKeyCode();
+
+        if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_ESCAPE)
             game.setRestarted(true);
     }
 

@@ -3,52 +3,101 @@ package com.cosmic2d.main.states;
 import com.cosmic2d.main.Game;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
-import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ScoreBoardState
 {
     private Game game;
     private Rectangle2D returnButton;
+    private ArrayList<PlayerScore> scores;
+    private int currentLowestScore;
 
     public ScoreBoardState(Game game)
     {
         this.game = game;
-        this.returnButton = new Rectangle2D.Double(
-                (Game.WIDTH * Game.SCALE / 2.0) - 100, 380, 200 ,50);
+        this.returnButton =
+                new Rectangle2D.Double(Game.WIDTH / 2.0 - 100, 380, 200 ,50);
+        this.scores = new ArrayList<>();
+        scores.add(new PlayerScore("DREG", 7, 251));
+        scores.add(new PlayerScore("ROMEK", 6, 221));
+        scores.add(new PlayerScore("ISA", 8, 150));
+        scores.add(new PlayerScore("ROMEK", 4, 37));
+        scores.add(new PlayerScore("DOMINO", 12, 227));
+        Collections.sort(scores,
+                Comparator.comparingInt(PlayerScore::getKilledEnemies)
+                          .reversed());
+        currentLowestScore = scores.get(4).killedEnemies;
     }
 
     public void render(Graphics2D g2)
     {
-        Font fnt0 = new Font("arial", Font.BOLD, 22);
+        Font fnt0 = game.getFntUnispaceBold().deriveFont(30F);
         g2.setFont(fnt0);
-        g2.setColor(Color.WHITE);
+        g2.setColor(Color.ORANGE);
         FontRenderContext context = g2.getFontRenderContext();
 
         String welcome = "NAJLEPSZE WYNIKI";
         Rectangle2D labelBounds = fnt0.getStringBounds(welcome, context);
-        g2.drawString(welcome, (int)(((Game.WIDTH * Game.SCALE) / 2)
-                                     - labelBounds.getWidth() / 2), 70);
+        g2.drawString(welcome,
+                (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2), 70);
 
-        fnt0 = new Font("arial", Font.BOLD, 16);
+        //Table Headers
+        fnt0 = fnt0.deriveFont(25F);
         g2.setFont(fnt0);
         g2.setColor(Color.YELLOW);
+        context = g2.getFontRenderContext();
+        g2.drawString("MIEJSCE", 50, 135);
+        g2.drawString("WYNIK", 220, 135);
+        g2.drawString("ESKADRY", 370, 135);
+        g2.drawString("GRACZ", 525, 135);
 
-        String msg =
-                "Punktacja za zestrzelenie wrogich jednostek:\n" +
-                "Czerwony: 3, Pomarańczowy: 2, Żółty: 1, Szary: 0.";
-        int line = 0;
-        StringTokenizer tokenizer = new StringTokenizer(msg, "\n");
-        while (tokenizer.hasMoreElements())
+        Rectangle2D placeBounds = fnt0.getStringBounds("MIEJSCE", context);
+        Rectangle2D squadronsBounds = fnt0.getStringBounds("ESKADRY", context);
+        Rectangle2D currentTextBounds;
+
+        for (int i = 0; i < scores.size(); i++)
         {
-            String token = tokenizer.nextToken();
-            labelBounds = fnt0.getStringBounds(token, context);
-            g2.drawString(token, (int)(((Game.WIDTH * Game.SCALE) / 2)
-                                       - labelBounds.getWidth() / 2),
-                    125 + line);
-            line += 30;
+            switch(i)
+            {
+            case 0:
+                g2.setColor(Color.RED);
+                break;
+            case 1:
+                g2.setColor(Color.CYAN);
+                break;
+            case 2:
+                g2.setColor(Color.GREEN);
+                break;
+            case 3:
+            case 4:
+                g2.setColor(Color.WHITE);
+                break;
+            }
+            String msg = String.valueOf(i + 1);
+            currentTextBounds = fnt0.getStringBounds(msg, context);
+            g2.drawString(msg,
+                    (int)(50 + placeBounds.getWidth() / 2 -
+                    currentTextBounds.getWidth() / 2),
+                    145 + ((i + 1) * 40));
+
+            g2.drawString(String.valueOf(scores.get(i).killedEnemies),
+                    220, 145 + ((i + 1) * 40));
+
+            msg = String.valueOf(scores.get(i).killedSquadrons);
+            currentTextBounds = fnt0.getStringBounds(msg, context);
+            g2.drawString(msg,
+                    (int)(370 + squadronsBounds.getWidth() / 2 -
+                          currentTextBounds.getWidth() / 2),
+                    145 + ((i + 1) * 40));
+
+            g2.drawString(scores.get(i).name, 525, 145+ ((i + 1) * 40));
         }
 
         g2.setColor(Color.WHITE);
@@ -56,12 +105,16 @@ public class ScoreBoardState
         this.drawButtonWithLabel(g2, fnt1, "Powrót do menu", returnButton);
     }
 
-    //HelpState handles Mouse Input of this state
-    /*public void mousePressed(MouseEvent e)
+    public void mousePressed(MouseEvent e)
     {
         if (returnButton.contains(e.getPoint()))
             game.setState(STATE.MENU);
-    }*/
+    }
+
+    public void keyPressed(KeyEvent e)
+    {
+        game.setState(STATE.MENU);
+    }
 
     /**
      * Draws a rectangle button (black background, white outlines and label)
@@ -92,8 +145,27 @@ public class ScoreBoardState
         g2.draw(button);
     }
 
-    private class HighScoreData
+    public int getCurrentLowestScore()
     {
+        return currentLowestScore;
+    }
 
+    private class PlayerScore
+    {
+        private String name;
+        private int killedSquadrons;
+        private int killedEnemies;
+
+        public PlayerScore(String name, int killedSquadrons, int killedEnemies)
+        {
+            this.name = name;
+            this.killedSquadrons = killedSquadrons;
+            this.killedEnemies = killedEnemies;
+        }
+
+        public int getKilledEnemies()
+        {
+            return killedEnemies;
+        }
     }
 }
