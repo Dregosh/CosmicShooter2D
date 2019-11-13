@@ -2,7 +2,6 @@ package com.cosmic2d.main.classes;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class BufferedImageLoader
@@ -11,8 +10,7 @@ public class BufferedImageLoader
 
     public BufferedImage loadImage(String path) throws IOException
     {
-        //image = ImageIO.read(getClass().getResource(path));
-        image = ImageIO.read(new File(path));
+        image = ImageIO.read(getClass().getResource(path));
         return image;
     }
 }

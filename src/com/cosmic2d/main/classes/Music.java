@@ -4,13 +4,14 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import java.io.File;
+import java.net.URL;
 
 public enum Music
 {
-    MENU("res\\168.wav"),
-    GAMEPLAY("res\\c-jungle.wav"),
-    HIGH_SCORES("res\\c-ending.wav"),
-    GAMEOVER("res\\c-gameover.wav");
+    MENU("168.wav"),
+    GAMEPLAY("c-jungle.wav"),
+    HIGH_SCORES("c-ending.wav"),
+    GAMEOVER("c-gameover.wav");
 
     public enum PlayType
     {
@@ -22,24 +23,17 @@ public enum Music
 
     Music(String musicLocation)
     {
-        File musicPath = new File(musicLocation);
-        if (musicPath.exists())
+        URL url = this.getClass().getResource(musicLocation);
+        try (AudioInputStream audioInput =
+                     AudioSystem.getAudioInputStream(url))
         {
-            try (AudioInputStream audioInput =
-                         AudioSystem.getAudioInputStream(musicPath))
-            {
-                clip = AudioSystem.getClip();
-                clip.open(audioInput);
-            }
-            catch (Exception e)
-            {
-                System.out.println(e.getMessage());
-                e.printStackTrace();
-            }
+            clip = AudioSystem.getClip();
+            clip.open(audioInput);
         }
-        else
+        catch (Exception e)
         {
-            System.out.println("Nie znaleziono pliku z muzyką");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 

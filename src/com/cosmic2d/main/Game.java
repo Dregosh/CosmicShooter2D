@@ -11,8 +11,11 @@ import java.awt.event.KeyEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class Game extends JPanel
 {
@@ -73,10 +76,10 @@ public class Game extends JPanel
         BufferedImageLoader loader = new BufferedImageLoader();
         try
         {
-            spriteSheet = loader.loadImage("res\\sprite_sheet.png");
-            background = loader.loadImage("res\\space_background.png");
-            fntUnispaceBold = Font.createFont(Font.TRUETYPE_FONT,
-                    new FileInputStream("res\\unispace_bd.ttf"));
+            spriteSheet = loader.loadImage("sprite_sheet.png");
+            background = loader.loadImage("space_background.png");
+            InputStream is = getClass().getResourceAsStream("unispace_bd.ttf");
+            fntUnispaceBold = Font.createFont(Font.TRUETYPE_FONT, is);
         }
         catch (IOException | FontFormatException e)
         {

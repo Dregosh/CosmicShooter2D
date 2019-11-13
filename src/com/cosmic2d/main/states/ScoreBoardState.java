@@ -30,7 +30,7 @@ public class ScoreBoardState
         this.scores = new ArrayList<>();
 
         //HighScore Table initialization
-        this.highScoresDataFile = new File("res\\highScores.dat");
+        this.highScoresDataFile = new File("highScores.dat");
         if (highScoresDataFile.exists())
         {
             //Import of HighScore data from existing highScore.dat file
@@ -51,11 +51,11 @@ public class ScoreBoardState
         else
         {
             //Default HighScores in case of missing highScores.dat file
-            scores.add(new PlayerScore("DREG", 1, 9));
-            scores.add(new PlayerScore("ROMEK", 2, 12));
-            scores.add(new PlayerScore("ISA", 1, 1));
-            scores.add(new PlayerScore("ROMEK", 3, 15));
-            scores.add(new PlayerScore("DOMINO", 5, 21));
+            scores.add(new PlayerScore("DOMINO", 15, 533));
+            scores.add(new PlayerScore("ROMEK", 13, 482));
+            scores.add(new PlayerScore("MAT", 13, 459));
+            scores.add(new PlayerScore("IZA", 9, 310));
+            scores.add(new PlayerScore("ELA", 8, 275));
 
             //Creation of new highScores.dat file with default data
             exportHighScoreTableToFile(highScoresDataFile);

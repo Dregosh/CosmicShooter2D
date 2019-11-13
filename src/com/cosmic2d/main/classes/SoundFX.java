@@ -4,35 +4,29 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import java.io.File;
+import java.net.URL;
 
 public enum SoundFX
 {
-    MISSILE_SHOT("res\\missile-shot.wav"),
-    EXPLOSION("res\\explosion.wav"),
-    NEW_SQUADRON("res\\new_squadron.wav");
+    MISSILE_SHOT("missile-shot.wav"),
+    EXPLOSION("explosion.wav"),
+    NEW_SQUADRON("new_squadron.wav");
 
     private Clip clip;
 
     SoundFX(String soundLocation)
     {
-        File soundFile = new File(soundLocation);
-        if (soundFile.exists())
+        URL url = this.getClass().getResource(soundLocation);
+        try (AudioInputStream audioInput =
+                     AudioSystem.getAudioInputStream(url))
         {
-            try (AudioInputStream audioInput =
-                         AudioSystem.getAudioInputStream(soundFile))
-            {
-                this.clip = AudioSystem.getClip();
-                this.clip.open(audioInput);
-            }
-            catch (Exception e)
-            {
-                System.out.println(e.getMessage());
-                e.printStackTrace();
-            }
+            this.clip = AudioSystem.getClip();
+            this.clip.open(audioInput);
         }
-        else
+        catch (Exception e)
         {
-            System.out.println("Nie znaleziono pliku z efektem dźwiękowym.");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
