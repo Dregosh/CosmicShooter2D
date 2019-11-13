@@ -1,9 +1,6 @@
 package com.cosmic2d.main;
 
-import com.cosmic2d.main.classes.Animation;
-import com.cosmic2d.main.classes.EntityFriendly;
-import com.cosmic2d.main.classes.EntityHostile;
-import com.cosmic2d.main.classes.SoundFX;
+import com.cosmic2d.main.classes.*;
 import com.cosmic2d.main.states.STATE;
 
 import java.awt.*;
@@ -85,6 +82,8 @@ public class Player extends GameObject implements EntityFriendly
                 game.getScoreBoardState().addNewHighScore();
                 game.getGameOverState().setNewHighScore(true);
             }
+            Music.GAMEPLAY.stop();
+            Music.GAMEOVER.play(Music.PlayType.ONCE);
             game.setState(STATE.GAME_OVER);
         }
 

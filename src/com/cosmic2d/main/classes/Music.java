@@ -9,7 +9,14 @@ public enum Music
 {
     MENU("res\\168.wav"),
     GAMEPLAY("res\\c-jungle.wav"),
-    HIGH_SCORES("res\\c-ending.wav");
+    HIGH_SCORES("res\\c-ending.wav"),
+    GAMEOVER("res\\c-gameover.wav");
+
+    public enum PlayType
+    {
+        ONCE,
+        LOOPED;
+    }
 
     private Clip clip;
 
@@ -43,6 +50,16 @@ public enum Music
         clip.setFramePosition(0);
         clip.start();
         clip.loop(Clip.LOOP_CONTINUOUSLY);
+    }
+
+    public void play(PlayType pt)
+    {
+        if (clip.isRunning())
+            clip.stop();
+        clip.setFramePosition(0);
+        clip.start();
+        if (pt == PlayType.LOOPED)
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
     public void stop()

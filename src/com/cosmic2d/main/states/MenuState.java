@@ -45,6 +45,10 @@ public class MenuState
         this.drawButtonWithLabel(g2, fnt1, "Najlepsi", scoreBoardButton);
         this.drawButtonWithLabel(g2, fnt1, "Pomoc", helpButton);
         this.drawButtonWithLabel(g2, fnt1, "Koniec", quitButton);
+
+        Font fnt3 = new Font("arial", Font.BOLD, 15);
+        g2.setFont(fnt3);
+        g2.drawString("Music (c) Konami", 510, 470);
     }
 
     public void mousePressed(MouseEvent e)

@@ -1,6 +1,7 @@
 package com.cosmic2d.main.states;
 
 import com.cosmic2d.main.Game;
+import com.cosmic2d.main.classes.Music;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -52,7 +53,7 @@ public class GameOverState
         g2.drawString(msg,
                 (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2), 260);
 
-        if (newHighScore == true)
+        if (newHighScore)
         {
             g2.setColor(Color.RED);
             g2.drawString("GRATULACJE! Wynik wpisany do Tablicy Najlepszych!",
