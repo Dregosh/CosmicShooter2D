@@ -3,6 +3,7 @@ package com.cosmic2d.main;
 import com.cosmic2d.main.classes.EntityFriendly;
 import com.cosmic2d.main.classes.EntityHostile;
 import com.cosmic2d.main.classes.Animation;
+import com.cosmic2d.main.classes.SoundFX;
 
 import java.awt.*;
 import java.util.Random;
@@ -63,6 +64,7 @@ public class Enemy extends GameObject implements EntityHostile
                     game.getController().getEntitiesFriendly().get(i);
             if (Physics.collision(this, entityFriendly))
             {
+                SoundFX.EXPLOSION.play();
                 game.getController().removeEntity(entityFriendly);
                 game.getController().removeEntity(this);
                 game.getController().addEntity(new Explotion(game,

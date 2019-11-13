@@ -1,6 +1,7 @@
 package com.cosmic2d.main.states;
 
 import com.cosmic2d.main.Game;
+import com.cosmic2d.main.classes.Music;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -49,9 +50,17 @@ public class MenuState
     public void mousePressed(MouseEvent e)
     {
         if (playButton.contains(e.getPoint()))
+        {
+            Music.MENU.stop();
+            Music.GAMEPLAY.play();
             game.setState(STATE.GAME);
+        }
         else if (scoreBoardButton.contains(e.getPoint()))
+        {
+            Music.MENU.stop();
+            Music.HIGH_SCORES.play();
             game.setState(STATE.SCORE_BOARD);
+        }
         else if (helpButton.contains(e.getPoint()))
             game.setState(STATE.HELP);
         else if (quitButton.contains(e.getPoint()))
@@ -63,9 +72,18 @@ public class MenuState
         int key = e.getKeyCode();
 
         if (key == KeyEvent.VK_ENTER)
+        {
+            Music.MENU.stop();
+            Music.GAMEPLAY.play();
             game.setState(STATE.GAME);
+        }
         else if (key == KeyEvent.VK_N)
+        {
+            Music.MENU.stop();
+            Music.HIGH_SCORES.play();
             game.setState(STATE.SCORE_BOARD);
+
+        }
         else if (key == KeyEvent.VK_P)
             game.setState(STATE.HELP);
         else if (key == KeyEvent.VK_ESCAPE)

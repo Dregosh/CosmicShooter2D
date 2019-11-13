@@ -3,6 +3,7 @@ package com.cosmic2d.main;
 import com.cosmic2d.main.classes.Animation;
 import com.cosmic2d.main.classes.EntityFriendly;
 import com.cosmic2d.main.classes.EntityHostile;
+import com.cosmic2d.main.classes.SoundFX;
 import com.cosmic2d.main.states.STATE;
 
 import java.awt.*;
@@ -48,27 +49,43 @@ public class Player extends GameObject implements EntityFriendly
         setY(getY() + velY);
 
         //Player movement bounds
-        if (getX() <= 0) setX(0);
-        if (getX() >= 640 - 32) setX(640 - 32);
-        if (getY() <= 0) setY(0);
-        if (getY() >= 480 - 44) setY(480 - 44);
+        if (getX() <= 0)            setX(0);
+        if (getX() >= 640 - 32)     setX(640 - 32);
+        if (getY() <= 0)            setY(0);
+        if (getY() >= 480 - 44)     setY(480 - 44);
 
-        //Player with Enemy collision check
-        for (int i = 0; i < game.getController().getEntitiesHostile().size(); i++)
+        //Collision Check LOOP: Player with every existing Enemy
+        for (int i = 0;
+             i < game.getController().getEntitiesHostile().size(); i++)
         {
             EntityHostile entityHostile =
                     game.getController().getEntitiesHostile().get(i);
 
             if (Physics.collision(this, entityHostile))
             {
-                game.getController().getEntitiesHostile().remove(entityHostile);
-                game.getController().addEntity(new Explotion(game,
-                        entityHostile.getX(), entityHostile.getY()));
+                SoundFX.EXPLOSION.play();
+                game.getController().getEntitiesHostile().remove(
+                        entityHostile);
+
+                game.getController().addEntity(
+                        new Explotion(game, entityHostile.getX(),
+                                entityHostile.getY()));
+
                 game.setEnemyKilled(game.getEnemyKilled() + 1);
                 this.health -= 10;
             }
-            if (this.health <= 0)
-                game.setState(STATE.GAME_OVER);
+        }
+
+        //In case of Player loosing the game
+        if (this.health <= 0)
+        {
+            if (game.getCurrentPoints() >
+                game.getScoreBoardState().getCurrentLowestScore())
+            {
+                game.getScoreBoardState().addNewHighScore();
+                game.getGameOverState().setNewHighScore(true);
+            }
+            game.setState(STATE.GAME_OVER);
         }
 
         //Player Animation

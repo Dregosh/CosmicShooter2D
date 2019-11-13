@@ -1,6 +1,8 @@
 package com.cosmic2d.main;
 
 import com.cosmic2d.main.classes.BufferedImageLoader;
+import com.cosmic2d.main.classes.Music;
+import com.cosmic2d.main.classes.SoundFX;
 import com.cosmic2d.main.states.*;
 
 import javax.swing.*;
@@ -71,10 +73,10 @@ public class Game extends JPanel
         BufferedImageLoader loader = new BufferedImageLoader();
         try
         {
-            spriteSheet = loader.loadImage("/sprite_sheet.png");
-            background = loader.loadImage("/space_background.png");
+            spriteSheet = loader.loadImage("res\\sprite_sheet.png");
+            background = loader.loadImage("res\\space_background.png");
             fntUnispaceBold = Font.createFont(Font.TRUETYPE_FONT,
-                    new FileInputStream("res/unispace_bd.ttf"));
+                    new FileInputStream("res\\unispace_bd.ttf"));
         }
         catch (IOException | FontFormatException e)
         {
@@ -93,13 +95,13 @@ public class Game extends JPanel
         this.addKeyListener(new KeyInput(this));
         this.addMouseListener(new MouseInput(this));
 
-        System.out.println(playerName);
-
         this.restart();
     }
 
     private void restart()
     {
+        Music.MENU.play();
+
         enemyCount = 5;
         enemyKilled = 0;
         additionalEnemiesOnNextLvl = 2;
@@ -182,6 +184,7 @@ public class Game extends JPanel
 
             if (isRestarted)
             {
+                Music.stopAllMusic();
                 this.restart();
             }
         }
@@ -212,6 +215,7 @@ public class Game extends JPanel
             {
                 enemyCount += additionalEnemiesOnNextLvl;
                 enemyKilled = 0;
+                SoundFX.NEW_SQUADRON.play();
                 currentLevel++;
                 controller.createEnemy(enemyCount);
             }
@@ -321,7 +325,9 @@ public class Game extends JPanel
                 if (player.getCurrentAmmoAmount() > 0)
                 {
                     isShooting = true;
-                    player.setCurrentAmmoAmount(player.getCurrentAmmoAmount() - 1);
+                    SoundFX.MISSILE_SHOT.play();
+                    player.setCurrentAmmoAmount(
+                            player.getCurrentAmmoAmount() - 1);
                     controller.addEntity(new Bullet(player.getX(),
                             player.getY() + 10, tex, this));
                 }

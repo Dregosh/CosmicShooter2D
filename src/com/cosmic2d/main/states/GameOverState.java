@@ -13,12 +13,14 @@ public class GameOverState
 {
     private Game game;
     private Rectangle2D returnButton;
+    private boolean newHighScore;
 
     public GameOverState(Game game)
     {
         this.game = game;
         returnButton =
                 new Rectangle2D.Double(Game.WIDTH / 2.0 - 100, 350, 200 ,50);
+        newHighScore = false;
     }
 
     public void render(Graphics2D g2)
@@ -50,6 +52,12 @@ public class GameOverState
         g2.drawString(msg,
                 (int)(Game.WIDTH / 2 - labelBounds.getWidth() / 2), 260);
 
+        if (newHighScore == true)
+        {
+            g2.setColor(Color.RED);
+            g2.drawString("GRATULACJE! Wynik wpisany do Tablicy Najlepszych!",
+                    60, 310);
+        }
 
         g2.setColor(Color.WHITE);
         Font fnt1 = new Font("arial", Font.BOLD, 20);
@@ -59,7 +67,10 @@ public class GameOverState
     public void mousePressed(MouseEvent e)
     {
         if (returnButton.contains(e.getPoint()))
+        {
+            newHighScore = false;
             game.setRestarted(true);
+        }
     }
 
     public void keyPressed(KeyEvent e)
@@ -67,7 +78,10 @@ public class GameOverState
         int key = e.getKeyCode();
 
         if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_ESCAPE)
+        {
+            newHighScore = false;
             game.setRestarted(true);
+        }
     }
 
     /**
@@ -97,5 +111,15 @@ public class GameOverState
                                     labelBounds.getWidth() / 2),
                 (int) (button.getY() + yOffset + metrics.getAscent()));
         g2.draw(button);
+    }
+
+    public boolean isNewHighScore()
+    {
+        return newHighScore;
+    }
+
+    public void setNewHighScore(boolean newHighScore)
+    {
+        this.newHighScore = newHighScore;
     }
 }

@@ -24,7 +24,8 @@ public class KeyInput extends KeyAdapter
             System.exit(0);
 
         //STATES keys
-        else if (game.getState() == STATE.GAME)
+        else if (game.getState() == STATE.GAME ||
+                 game.getState() == STATE.PAUSE)
             game.keyPressed(e);
 
         else if (game.getState() == STATE.MENU)

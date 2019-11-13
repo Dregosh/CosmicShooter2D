@@ -6,9 +6,6 @@ public class GameLauncher
 {
     public static void main(String[] args)
     {
-        EventQueue.invokeLater(() ->
-        {
-            new GameWindow();
-        });
+        EventQueue.invokeLater(() -> new GameWindow());
     }
 }
