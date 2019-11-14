@@ -11,11 +11,8 @@ import java.awt.event.KeyEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 public class Game extends JPanel
 {
@@ -29,6 +26,7 @@ public class Game extends JPanel
 
     private BufferedImage image = new BufferedImage(WIDTH, HEIGHT,
         BufferedImage.TYPE_INT_RGB);
+
     private BufferedImage spriteSheet = null;
     private BufferedImage background = null;
     private Font fntUnispaceBold = null;
@@ -78,9 +76,11 @@ public class Game extends JPanel
         {
             spriteSheet = loader.loadImage("res/sprite_sheet.png");
             background = loader.loadImage("res/space_background.png");
+
             InputStream is = getClass()
                     .getResourceAsStream("res/unispace_bd.ttf");
             fntUnispaceBold = Font.createFont(Font.TRUETYPE_FONT, is);
+            is.close();
         }
         catch (IOException | FontFormatException e)
         {
@@ -158,9 +158,7 @@ public class Game extends JPanel
             }
 
             if (now - lastUpdateTime > TIME_BETWEEN_UPDATES)
-            {
                 lastUpdateTime = now - TIME_BETWEEN_UPDATES;
-            }
 
             repaint();
             lastRenderTime = now;
@@ -169,8 +167,8 @@ public class Game extends JPanel
             int thisSecond = (int) (lastUpdateTime / 1_000_000_000);
             if (thisSecond > lastSecondTime)
             {
-                //System.out.println("NEW SECOND " + thisSecond +
-                //                   " " + frameCount);
+                //System.out.println(
+                //        "NEW SECOND " + thisSecond + " " + frameCount);
                 fps = frameCount;
                 frameCount = 0;
                 lastSecondTime = thisSecond;
@@ -294,7 +292,7 @@ public class Game extends JPanel
 
         //g.drawString("FPS: " + fps, 10, 50);
         frameCount++;
-        //g2.dispose();
+        g2.dispose();
     }
 
     public void keyPressed(KeyEvent e)

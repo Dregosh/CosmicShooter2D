@@ -38,6 +38,7 @@ public enum Music
         }
     }
 
+    //Default play() method to play music continuously, until stopped manually
     public void play()
     {
         if (clip.isRunning())
@@ -47,6 +48,7 @@ public enum Music
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
+    //Overloaded play() method to optionally set music to be played only once
     public void play(PlayType pt)
     {
         if (clip.isRunning())

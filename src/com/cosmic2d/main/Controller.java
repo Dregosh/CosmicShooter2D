@@ -14,9 +14,6 @@ public class Controller
     private LinkedList<EntityFriendly> entitiesFriendly = new LinkedList<>();
     private LinkedList<EntityHostile> entitiesHostile = new LinkedList<>();
     private LinkedList<EntityNeutral> entitiesNeutral = new LinkedList<>();
-    private EntityFriendly entityFriendly;
-    private EntityHostile entityHostile;
-    private EntityNeutral entityNeutral;
     private Random r = new Random();
 
     public Controller(Game game)
@@ -37,7 +34,7 @@ public class Controller
         //All FRIENDLY Entities update
         for (int i = 0; i < entitiesFriendly.size(); i++)
         {
-            entityFriendly = entitiesFriendly.get(i);
+            EntityFriendly entityFriendly = entitiesFriendly.get(i);
 
             //Removal of friendly bullets which are beyond upper screen border
             if (entityFriendly.getY() < -35)
@@ -49,14 +46,14 @@ public class Controller
         //All HOSTILE Entities update
         for (int i = 0; i < entitiesHostile.size(); i++)
         {
-            entityHostile = entitiesHostile.get(i);
+            EntityHostile entityHostile = entitiesHostile.get(i);
             entityHostile.tick();
         }
 
         //All NEUTRAL Entities update
         for (int i = 0; i < entitiesNeutral.size(); i++)
         {
-            entityNeutral = entitiesNeutral.get(i);
+            EntityNeutral entityNeutral = entitiesNeutral.get(i);
             if (System.currentTimeMillis() >
                 entityNeutral.getCreationTime() + 200)
                     entitiesNeutral.remove(entityNeutral);

@@ -69,7 +69,8 @@ public class Enemy extends GameObject implements EntityHostile
                 game.getController().removeEntity(this);
                 game.getController().addEntity(new Explotion(game,
                         this.getX(), this.getY()));
-                game.setCurrentPoints(game.getCurrentPoints() + this.pointValue);
+                game.setCurrentPoints(
+                        game.getCurrentPoints() + this.pointValue);
                 game.setEnemyKilled(game.getEnemyKilled() + 1);
             }
         }
@@ -79,6 +80,7 @@ public class Enemy extends GameObject implements EntityHostile
     @Override
     public void render(Graphics2D g2)
     {
-        anim.drawAnimation(g2, getX(), getY(), 0);
+        anim.drawAnimation(g2, getX(),
+                getY(), 0);
     }
 }
