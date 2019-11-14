@@ -1,17 +1,18 @@
 package com.cosmic2d.main.classes;
 
+import com.cosmic2d.main.Game;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import java.io.File;
 import java.net.URL;
 
 public enum Music
 {
-    MENU("168.wav"),
-    GAMEPLAY("c-jungle.wav"),
-    HIGH_SCORES("c-ending.wav"),
-    GAMEOVER("c-gameover.wav");
+    MENU("res/168.wav"),
+    GAMEPLAY("res/c-jungle.wav"),
+    HIGH_SCORES("res/c-ending.wav"),
+    GAMEOVER("res/c-gameover.wav");
 
     public enum PlayType
     {
@@ -23,7 +24,7 @@ public enum Music
 
     Music(String musicLocation)
     {
-        URL url = this.getClass().getResource(musicLocation);
+        URL url = Game.class.getResource(musicLocation);
         try (AudioInputStream audioInput =
                      AudioSystem.getAudioInputStream(url))
         {

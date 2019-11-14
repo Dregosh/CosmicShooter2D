@@ -1,22 +1,23 @@
 package com.cosmic2d.main.classes;
 
+import com.cosmic2d.main.Game;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import java.io.File;
 import java.net.URL;
 
 public enum SoundFX
 {
-    MISSILE_SHOT("missile-shot.wav"),
-    EXPLOSION("explosion.wav"),
-    NEW_SQUADRON("new_squadron.wav");
+    MISSILE_SHOT("res/missile-shot.wav"),
+    EXPLOSION("res/explosion.wav"),
+    NEW_SQUADRON("res/new_squadron.wav");
 
     private Clip clip;
 
     SoundFX(String soundLocation)
     {
-        URL url = this.getClass().getResource(soundLocation);
+        URL url = Game.class.getResource(soundLocation);
         try (AudioInputStream audioInput =
                      AudioSystem.getAudioInputStream(url))
         {

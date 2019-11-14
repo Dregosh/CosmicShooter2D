@@ -76,9 +76,10 @@ public class Game extends JPanel
         BufferedImageLoader loader = new BufferedImageLoader();
         try
         {
-            spriteSheet = loader.loadImage("sprite_sheet.png");
-            background = loader.loadImage("space_background.png");
-            InputStream is = getClass().getResourceAsStream("unispace_bd.ttf");
+            spriteSheet = loader.loadImage("res/sprite_sheet.png");
+            background = loader.loadImage("res/space_background.png");
+            InputStream is = getClass()
+                    .getResourceAsStream("res/unispace_bd.ttf");
             fntUnispaceBold = Font.createFont(Font.TRUETYPE_FONT, is);
         }
         catch (IOException | FontFormatException e)
